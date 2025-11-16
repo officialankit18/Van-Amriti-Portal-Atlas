@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forest Rights Act, 2006 - Ministry of Tribal Affairs</title>
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"/>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Roboto',sans-serif;line-height:1.6;color:#333;background:#f9f9f9}
+    .container{width:90%;max-width:1200px;margin:0 auto}
+    h1,h2,h3{font-family:'Poppins',sans-serif;font-weight:600}
+
+    :root{
+      --green:#2E7D32;
+      --green-dark:#1B5E20;
+      --accent:#FFB300;
+      --blue-dark:#0d2b6f; /* dark blue for main title */
+    }
+
+    /* Brand bar (top strip & right badge removed) */
+    .brandbar{
+      background:#fff;border-bottom:1px solid #e6e9ed;
+      box-shadow:0 2px 5px rgba(0,0,0,.05);
+    }
+    .brandbar .row{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;
+    }
+    .brand-left{display:flex;align-items:center;gap:12px}
+    .brand-logo-img{height:60px;width:auto;object-fit:contain}
+    /* UPDATED: main heading text, bigger and dark blue */
+    .brand-title h1{font-size:28px;margin:0;color:black(--blue-dark)}
+    .brand-title p{margin:0;color:#6b7b72;font-size:12px}
+
+    /* Right-top Swachh Bharat logo */
+    .brand-right img.sb-logo{height: 56px;width:auto;object-fit:contain}
+
+    /* Main green navbar */
+    .mainnav{
+      background:var(--green);position:sticky;top:0;z-index:1000;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+    .nav-inner{display:flex;align-items:center;gap:6px}
+    .menu-toggle{
+      display:none;margin-left:auto;background:transparent;border:1px solid #cfd8dc;color:#e7ffef;
+      padding:8px 10px;border-radius:6px;cursor:pointer
+    }
+    .nav-links{list-style:none;display:flex;align-items:center;gap:2px;flex:1}
+    .nav-links a{
+      display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;padding:12px 16px;border-radius:6px;transition:background .2s ease
+    }
+    .nav-links a:hover{background:var(--green-dark)}
+    .nav-links .push-right{margin-left:auto}
+    .nav-links .login-btn{background:var(--accent);color:#1b2a2f;margin:6px 0;padding:8px 14px;border-radius:6px}
+    .nav-links .login-btn:hover{background:#FFA000}
+
+    /* Full-width HERO slider */
+    .hero{position:relative}
+    .hero .slider{
+      position:relative;width:100%;height:68vh;min-height:420px;max-height:80vh;overflow:hidden
+    }
+    .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease-in-out}
+    .slide.active{opacity:1}
+    .slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.60) 0%, rgba(0,0,0,.30) 45%, rgba(0,0,0,0) 80%)}
+    .hero-overlay{position:absolute;left:6%;bottom:12%;z-index:2;max-width:700px;color:#fff}
+    .hero-overlay h2{font-size:42px;line-height:1.15;margin:0 0 10px}
+    .hero-overlay p{font-size:18px;opacity:.95;margin:0 0 18px}
+    .hero-buttons .btn{display:inline-block;text-decoration:none;font-weight:600;padding:12px 18px;border-radius:8px;margin-right:10px}
+    .btn-primary{background:var(--accent);color:#1b2a2f}
+    .btn-primary:hover{background:#FFA000}
+    .btn-secondary{background:transparent;border:2px solid #fff;color:#fff}
+    .btn-secondary:hover{background:#ffffff1a}
+    .controls{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:10px}
+    .ctrl{background:#ffffffcc;border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+    .ctrl:hover{background:#fff}
+    .dots{display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#ffffff88;border:1px solid rgba(0,0,0,.2);cursor:pointer}
+    .dot.active,.dot:hover{background:#fff}
+
+    /* Objectives */
+    .objectives{padding:80px 0;background:#fff}
+    .section-title{text-align:center;margin-bottom:50px;color:var(--green-dark);font-size:36px}
+    .objectives-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px}
+    .objective-card{background:#fff;padding:30px;border:1px solid #e0e0e0;border-radius:8px;text-align:center;opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease,box-shadow .3s ease}
+    .objective-card.visible{opacity:1;transform:translateY(0)}
+    .objective-card:hover{transform:translateY(-10px);box-shadow:0 10px 20px rgba(0,0,0,.08)}
+    .objective-card img{height:60px;margin-bottom:20px}
+    .objective-card h3{font-size:22px;color:#333;margin-bottom:10px}
+    .objective-card p{font-size:15px;color:#666}
+
+    /* Stats */
+    .stats{padding:60px 0;background:var(--green);color:#fff}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;text-align:center}
+    .stat-item h2{font-size:48px;font-weight:700}
+    .stat-item p{font-size:18px;opacity:.92}
+
+    /* Footer */
+    footer{padding:60px 0 24px;color:#fff;background:linear-gradient(rgba(5,48,27,.55),rgba(5,48,27,.65)),url('assets/forest_image.jpeg') center/cover no-repeat}
+    .footer-content{text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+    .footer-content p{max-width:700px;margin:0 auto 20px;color:#e8f4ee}
+    .footer-bottom{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,.25);font-size:14px;color:#f3faf6}
+
+    /* Responsive nav */
+    @media (max-width: 900px){
+      .menu-toggle{display:inline-flex}
+      .nav-links{display:none;flex-direction:column;width:100%;padding:8px;background:var(--green)}
+      .nav-links.open{display:flex}
+      .nav-links .push-right{margin-left:0}
+      .nav-links a{padding:12px 14px;justify-content:center}
+      .nav-links .login-btn{margin:8px}
+      .hero-overlay h2{font-size:32px}
+      .hero .slider{height:56vh;min-height:360px}
+    }
+
+    /* Enhanced Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .brand-logo-img, .sb-logo { height: 70px; }
+      .brand-title h1 { font-size: 24px; }
+      .brand-title p { font-size: 11px; }
+      .nav-links.open {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--green);
+        flex-direction: column;
+        padding: 10px 0 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,.15);
+        border-radius: 0 0 6px 6px;
+        width: 100% !important;
+      }
+      .nav-links a { padding: 14px 20px; }
+      .hero-overlay h2 { font-size: 28px; }
+      .hero-overlay p { font-size: 16px; }
+      .objectives { padding: 60px 0; }
+      .stats { padding: 50px 0; }
+      .stat-item h2 { font-size: 36px; }
+      .controls { gap: 8px; bottom: 15px; }
+      .ctrl { width: 30px; height: 30px; }
+      .dots { gap: 6px; }
+      .dot { width: 9px; height: 9px; }
+    }
+
+    @media (max-width: 480px) {
+      .brandbar .row { gap: 8px; padding: 8px 0; }
+      .brand-logo-img, .sb-logo { height: 50px; }
+      .brand-title h1 { font-size: 20px; }
+      .brand-title p { font-size: 10px; }
+      .brandbar .row { justify-content: space-between; }
+      .hero .slider { height: 50vh; min-height: 280px; }
+      .hero-overlay { left: 5%; bottom: 8%; }
+      .hero-overlay h2 { font-size: 24px; line-height: 1.2; }
+      .hero-overlay p { font-size: 15px; }
+      .hero-buttons .btn { display: block; width: 100%; max-width: 250px; margin: 0 auto 10px; text-align: center; }
+      .section-title { font-size: 28px; margin-bottom: 30px; }
+      .objectives { padding: 40px 0; }
+      .objectives-grid { gap: 20px; }
+      .objective-card { padding: 25px; }
+      .objective-card h3 { font-size: 20px; }
+      .stats { padding: 40px 0; }
+      .stats-grid { gap: 15px; }
+      .stat-item h2 { font-size: 28px; }
+      .controls { bottom: 10px; gap: 6px; }
+      .ctrl { width: 28px; height: 28px; }
+      .dots { gap: 4px; }
+      .dot { width: 8px; height: 8px; }
+      footer { padding: 40px 0 20px; }
+      .footer-content p { font-size: 14px; }
+      .container { width: 95%; }
+    }
+
+    /* Ensure no overflow on very small screens */
+    @media (max-width: 320px) {
+      .container { width: 100%; padding: 0 10px; }
+      .hero-overlay { left: 3%; padding: 0 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Brand bar with GOI emblem on the left -->
+  <div class="brandbar">
+    <div class="container row">
+      <div class="brand-left">
+        <!-- Replace with your emblem image path if needed -->
+        <img src="assets/national.png" alt="Government of India Emblem" class="brand-logo-img">
+        <div class="brand-title">
+          <!-- UPDATED main heading text -->
+          <h1>वनAmriti Portal & Atlas</h1>
+          <p>FRA Atlas • WebGIS • Decision Support</p>
+        </div>
+      </div>
+      <!-- Right-top Swachh Bharat logo (add file: assets/swachh-bharat.png) -->
+      <div class="brand-right">
+        <img src="assets/s.png" alt="Swachh Bharat" class="sb-logo">
+      </div>
+    </div>
+  </div>
+
+  <!-- Green navbar -->
+  <nav class="mainnav" role="navigation" aria-label="Primary">
+    <div class="container nav-inner">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-links" id="mainNav">
+        <li><a href="#"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="ab1.html" ><i class="fa-solid fa-scale-balanced"></i> About the Act</a></li>
+        <li><a href="abouttheportal.html"><i class="fa-solid fa-circle-info"></i> About the Portal</a></li>
+        <li><a href="mapConsumer.html" ><i class="fa-solid fa-location-dot"></i> Check Status</a></li>
+        <li><a href="Dashboard.html"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+        <li><a href="Team_details.html"><i class="fa-solid fa-users"></i> Team</a></li>
+        <li class="push-right"></li>
+        <li><a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i> Login</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- FULL-WIDTH HERO -->
+    <section class="hero">
+      <div class="slider" id="heroSlider">
+        <div class="slide active" style="background-image:url('assets/t1.jpg');"></div>
+        <div class="slide" style="background-image:url('assets/t2.jpg');"></div>
+        <div class="slide" style="background-image:url('assets/t3.jpeg');"></div>
+        <!-- ADDED: one more photo -->
+        <div class="slide" style="background-image:url('assets/t4.jpg');"></div>
+
+        <div class="hero-overlay">
+          <h2>Integrated FRA Atlas</h2>
+          <p>Digitized claims, pattas and assets in one place.</p>
+          <div class="hero-buttons">
+            <a href="https://en.wikipedia.org/wiki/Forest_Rights_Act_(India)" class="btn btn-primary" target="_blank">Learn More</a>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="ctrl" id="prevBtn" aria-label="Previous slide"><i class="fa-solid fa-angle-left"></i></button>
+          <div class="dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <!-- ADDED dot for 4th slide -->
+            <span class="dot" onclick="currentSlide(3)"></span>
+          </div>
+          <button class="ctrl" id="nextBtn" aria-label="Next slide"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Objectives -->
+    <section id="objectives" class="objectives">
+      <div class="container">
+        <h2 class="section-title">Harnessing Technology for Forest Rights</h2>
+        <div class="objectives-grid">
+          <div class="objective-card">
+            <img src="assets/data_digitalization.jpg" alt="Digital Records Icon">
+            <h3>Digital Record Keeping</h3>
+            <p>To digitize all legacy FRA claims and records, using AI to extract and standardize data for a secure and accessible digital archive.</p>
+          </div>
+          <div class="objective-card">
+            <img src="assets/AI.jpg" alt="AI Mapping Icon">
+            <h3>AI-Powered Asset Mapping</h3>
+            <p>Using satellite imagery and AI to map forest resources, water bodies, and farms, creating a detailed and accurate FRA Atlas.</p>
+          </div>
+          <div class="objective-card">
+            <img src="assets/Webportal.jpg" alt="Web Portal Icon">
+            <h3>Interactive Web Portal</h3>
+            <p>To develop an integrated WebGIS portal for visualizing spatial and socio-economic data, ensuring transparent tracking of FRA progress.</p>
+          </div>
+          <div class="objective-card">
+            <img src="assets/DSS.png" alt="Smart Planning Icon">
+            <h3>Smart Development Planning</h3>
+            <p>A Decision Support System (DSS) to intelligently recommend government schemes, ensuring targeted development for FRA-holding villages.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats" id="stats-section">
+      <div class="container stats-grid">
+        <div class="stat-item">
+          <h2 class="counter" data-target="4250000">0</h2>
+          <p>Individual & Community Claims Filed</p>
+        </div>
+        <div class="stat-item">
+          <h2 class="counter" data-target="2130000">0</h2>
+          <p>Land Titles Distributed</p>
+        </div>
+        <div class="stat-item">
+          <h2 class="counter" data-target="4460000">0</h2>
+          <p>Hectares of Forest Land Secured</p>
+        </div>
+        <div class="stat-item">
+          <h2 class="counter" data-target="150000">0</h2>
+          <p>Villages Benefited</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <h3>Ministry of Tribal Affairs</h3>
+        <p>Government of India</p>
+        <p>This portal provides information regarding The Forest Rights Act, 2006. For official correspondence, please refer to the official gazette and notifications.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Ministry of Tribal Affairs, Government of India. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    document.getElementById('menuToggle').addEventListener('click', ()=>{
+      document.getElementById('mainNav').classList.toggle('open');
+    });
+
+    // Close menu on link click (mobile)
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.nav-links a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          document.getElementById('mainNav').classList.remove('open');
+        });
+      });
+    });
+
+    // HERO slider
+    let slideIndex = 0;
+    let slideInterval;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(n){
+      if(n>=slides.length) slideIndex=0;
+      else if(n<0) slideIndex=slides.length-1;
+      else slideIndex=n;
+
+      slides.forEach(s=>s.classList.remove('active'));
+      dots.forEach(d=>d.classList.remove('active'));
+      slides[slideIndex].classList.add('active');
+      dots[slideIndex].classList.add('active');
+    }
+    function currentSlide(n){
+      showSlide(n); clearInterval(slideInterval); startSlideShow();
+    }
+    function startSlideShow(){
+      slideInterval = setInterval(()=>{ slideIndex++; showSlide(slideIndex); }, 5000);
+    }
+    document.getElementById('prevBtn').addEventListener('click', ()=>{ currentSlide(slideIndex-1); });
+    document.getElementById('nextBtn').addEventListener('click', ()=>{ currentSlide(slideIndex+1); });
+
+    // Objectives animation
+    function initObjectives(){
+      const objectiveCards = document.querySelectorAll('.objective-card');
+      const cardObserver = new IntersectionObserver((entries)=>{
+        entries.forEach((entry)=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+            cardObserver.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.1});
+      objectiveCards.forEach((card, idx)=>{
+        card.style.transitionDelay = `${idx*150}ms`;
+        cardObserver.observe(card);
+      });
+    }
+
+    // Counters
+    function initCounters(){
+      const counters = document.querySelectorAll('.counter');
+      const speed = 200;
+      const animateCounters = (entries, observer)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const counter = entry.target;
+            const updateCount = ()=>{
+              const target = +counter.getAttribute('data-target');
+              const count = +counter.innerText.replace(/,/g,'');
+              const inc = target / speed;
+              if(count < target){
+                counter.innerText = Math.ceil(count + inc).toLocaleString('en-IN');
+                setTimeout(updateCount, 15);
+              }else{
+                counter.innerText = target.toLocaleString('en-IN');
+              }
+            };
+            updateCount();
+            observer.unobserve(counter);
+          }
+        });
+      };
+      const observer = new IntersectionObserver(animateCounters, {root:null, threshold:0.5});
+      counters.forEach(c=>observer.observe(c));
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', ()=>{
+      showSlide(slideIndex); startSlideShow();
+      initObjectives(); initCounters();
+      window.currentSlide = currentSlide; // for dot clicks
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>वनAmriti Portal & Atlas - Claims Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #212529;
+            --accent: #4c6a46;
+            --accent-2: #b08968;
+            --muted-blue: #6a8fb6;
+            --muted-red: #c46a60;
+            --muted-green: #86a86a;
+            --muted-yellow: #e0c97b;
+            --shadow: 0 6px 18px rgba(33, 37, 41, 0.06);
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 100%;
+            /* FIX: Prevents horizontal overflow from padding on the body/container */
+            overflow-x: hidden; 
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 0.875rem;
+            /* Only apply vertical padding to the body */
+            padding: 1rem 0; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- LAYOUT & CARDS (Mobile First) --- */
+        .container {
+            max-width: 1200px;
+            /* Apply horizontal padding here to correctly constrain content */
+            padding: 0 1rem; 
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Single column for mobile */
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(33, 37, 41, 0.04);
+        }
+
+        h1 {
+            font-size: 1.125rem;
+        }
+
+        h2 {
+            font-size: 1rem;
+        }
+
+        p {
+            margin: 0 0 1rem 0;
+            color: #6c757d;
+            line-height: 1.5;
+            font-size: 0.8125rem;
+        }
+
+        /* --- HEADER (Mobile First) --- */
+        .header {
+            grid-column: 1/-1;
+            display: flex;
+            flex-direction: column;
+            /* Stacked on mobile */
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .brand {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), #3e5a3a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .title {
+            line-height: 1.2;
+        }
+
+        .title h1 {
+            margin: 0;
+        }
+
+        .title p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8125rem;
+        }
+
+        .right {
+            text-align: left;
+        }
+
+        /* --- FORM (Mobile First) --- */
+        .form-section h2,
+        .management-section h2 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Single column form fields on mobile */
+            gap: 0.75rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            color: #495057;
+            margin-bottom: 0.375rem;
+        }
+
+        .input,
+        select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: var(--text);
+            outline: none;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(76, 106, 70, 0.1);
+        }
+
+        .actions-row {
+            display: flex;
+            flex-direction: column;
+            /* Buttons stacked on mobile */
+            gap: 0.625rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            width: 100%; /* Buttons take full width on mobile */
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid #dee2e6;
+            color: var(--text);
+        }
+
+        /* --- MANAGEMENT & TABLE (Mobile First) --- */
+        .management-top {
+            display: flex;
+            flex-direction: column;
+            /* Stacked search and filters on mobile */
+            align-items: stretch;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            /* Stacked filters on mobile */
+            gap: 0.75rem;
+        }
+
+        .search {
+            width: 100%;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            /* CRITICAL for horizontal scrolling */
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        /* Visual hint for horizontal scroll on touch devices */
+        .table-wrap::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.05), transparent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .table-wrap.is-scrolling::after {
+            opacity: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: #495057;
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+            /* Keeps headers from wrapping */
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody td {
+            padding: 0.75rem;
+            border-top: 1px solid #e9ecef;
+            vertical-align: middle;
+            white-space: nowrap;
+            /* Keeps table content from wrapping */
+        }
+
+        tbody tr:hover {
+            background-color: rgba(76, 106, 70, 0.03);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #fff;
+        }
+
+        .s-granted {
+            background: var(--muted-blue);
+        }
+
+        .s-rejected {
+            background: var(--muted-red);
+        }
+
+        .s-verified {
+            background: var(--muted-green);
+        }
+
+        .s-claimed {
+            background: var(--muted-yellow);
+            color: #2b2b2b;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            padding: 0.375rem 0.625rem;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8125rem;
+        }
+
+        .empty {
+            padding: 2rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        /* --- MODAL (Mobile First) --- */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(33, 37, 41, 0.45);
+            z-index: 60;
+            padding: 1rem;
+        }
+
+        .modal {
+            width: 100%;
+            /* Full width on mobile */
+            max-width: 720px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 18px 50px rgba(33, 37, 41, 0.12);
+        }
+
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            /* Stacked header on mobile */
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column-reverse;
+            /* Stacked buttons on mobile (primary button on top) */
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e9ecef;
+            font-size: 0.875rem;
+        }
+
+        .kv strong {
+            color: #495057;
+            flex-shrink: 0;
+        }
+
+        .kv div:last-child {
+            text-align: right;
+        }
+
+        /* --- FOOTER (Mobile First) --- */
+        .footer {
+            grid-column: 1/-1;
+            display: flex;
+            flex-direction: column;
+            /* Stacked on mobile */
+            align-items: center;
+            text-align: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            color: #6c757d;
+            font-size: 0.8125rem;
+        }
+
+        /* ========================================= */
+        /* ========== RESPONSIVE STYLES (Overrides for larger screens) ========== */
+        /* ========================================= */
+
+        /* --- TABLETS AND UP (768px) --- */
+        @media (min-width: 768px) {
+            body {
+                padding: 1.5rem 0;
+            }
+            
+            .container {
+                padding: 0 1.5rem;
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .right {
+                text-align: right;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .actions-row {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .btn {
+                width: auto;
+            }
+
+            .management-top {
+                flex-direction: row;
+                align-items: flex-end;
+            }
+
+            .filters {
+                flex-direction: row;
+            }
+
+            .modal-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .modal-actions {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .footer {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        /* --- DESKTOPS AND UP (1024px) --- */
+        @media (min-width: 1024px) {
+             body {
+                padding: 1.75rem 0;
+            }
+            
+            .container {
+                padding: 0 1.75rem;
+                grid-template-columns: 1fr 1.5fr;
+                /* Two main content columns for desktop */
+                gap: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand">
+                <div class="logo">FRA</div>
+                <div class="title">
+                    <h1>वनAmriti Portal & Atlas - Claims Dashboard</h1>
+                    <p>Forest & Land · FRA 2006 inspired</p>
+                </div>
+            </div>
+            <div class="right">
+                <div style="font-weight:700">Government Portal</div>
+                <div style="color:#6c757d; font-size:13px">Official demo · Local data</div>
+            </div>
+        </div>
+
+        <div class="card form-section">
+            <h2>New Claim Data Entry</h2>
+            <p>Add a new FRA claim or edit an existing one.</p>
+            <form id="claimForm" autocomplete="off">
+                <input type="hidden" id="editIndex" />
+                <div class="form-grid">
+                    <div class="field"> <label class="label">Claim ID</label> <input id="claimId" class="input"
+                            required /> </div>
+                    <div class="field"> <label class="label">Claim Type</label> <select id="claimType" class="input"
+                            required>
+                            <option value="Individual">Individual</option>
+                            <option value="Community">Community</option>
+                        </select> </div>
+                    <div class="field"> <label class="label">State</label> <select id="state" class="input"
+                            required></select>
+                    </div>
+                    <div class="field"> <label class="label">District</label> <input id="district" class="input"
+                            required />
+                    </div>
+                    <div class="field"> <label class="label">Village</label> <input id="village" class="input"
+                            required /> </div>
+                    <div class="field"> <label class="label">Area (Hectares)</label> <input id="area" class="input"
+                            type="number" step="0.01" min="0" required /> </div>
+                    <div class="field"> <label class="label">Claimant Name</label> <input id="claimant" class="input"
+                            required />
+                    </div>
+                    <div class="field"> <label class="label">Date of Claim</label> <input id="dateOfClaim" class="input"
+                            type="date" required /> </div>
+                    <div class="field"> <label class="label">Status</label> <select id="status" class="input" required>
+                            <option value="Claimed">Claimed</option>
+                            <option value="Verified">Verified</option>
+                            <option value="Granted">Granted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select> </div>
+                    <div class="field" style="grid-column:1/-1"> <label class="label">Remarks (optional)</label> <input
+                            id="remarks" class="input" /> </div>
+                </div>
+                <div class="actions-row">
+                    <button id="submitBtn" class="btn btn-primary" type="submit">Submit Claim</button>
+                    <button id="resetForm" class="btn btn-ghost" type="reset">Reset Form</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card management-section">
+            <h2>Claims Management</h2>
+            <p>Filter, search and manage submitted claims.</p>
+            <div class="management-top">
+                <div class="filters">
+                    <div> <label class="label">State</label> <select id="filterState" class="input">
+                            <option value="all">All States</option>
+                        </select> </div>
+                    <div> <label class="label">Status</label> <select id="filterStatus" class="input">
+                            <option value="all">All Status</option>
+                            <option value="Claimed">Claimed</option>
+                            <option value="Verified">Verified</option>
+                            <option value="Granted">Granted</option>
+                            <option value="Rejected">Rejected</option>
+                        </select> </div>
+                </div>
+                <div style="flex:1;"> <input id="searchBox" class="search input"
+                        placeholder="Search by Claim ID, claimant..." /> </div>
+            </div>
+
+            <div class="table-wrap" id="tableWrap">
+                <table aria-label="Claims Table">
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>State / District</th>
+                            <th>Village</th>
+                            <th>Claimant</th>
+                            <th>Type</th>
+                            <th>Area (Ha)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="claimsTbody"></tbody>
+                </table>
+            </div>
+            <div id="emptyNotice" class="empty" style="display:none">No claims to display.</div>
+        </div>
+
+        <div class="footer">
+            <div>Forest Rights Act (FRA) · 2006 inspired</div>
+            <div>Local demo · Data stored in browser</div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal-backdrop" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div>
+                    <div id="modalTitle" style="font-weight:700; font-size:1rem"></div>
+                    <div id="modalSub" style="color:#6c757d; margin-top:0.25rem; font-size:0.8125rem"></div>
+                </div>
+                <div> <button id="modalClose" class="btn btn-ghost">Close</button> </div>
+            </div>
+            <div id="modalBody" style="margin-top:1rem"></div>
+            <div class="modal-actions">
+                <button id="modalDelete" class="btn btn-ghost"
+                    style="border:1px solid #e9ecef; color:var(--muted-red)">Delete</button>
+                <button id="modalEdit" class="btn btn-primary">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const states = ['Madhya Pradesh', 'Tripura', 'Odisha', 'Telangana'];
+        const statusClass = { Granted: 's-granted', Rejected: 's-rejected', Verified: 's-verified', Claimed: 's-claimed' };
+        let claims = [];
+        const key = 'fra_light_claims_v1';
+
+        // Element selectors
+        const stateEl = document.getElementById('state');
+        const filterState = document.getElementById('filterState');
+        const filterStatus = document.getElementById('filterStatus');
+        const searchBox = document.getElementById('searchBox');
+        const claimsTbody = document.getElementById('claimsTbody');
+        const emptyNotice = document.getElementById('emptyNotice');
+        const editIndexEl = document.getElementById('editIndex');
+        const submitBtn = document.getElementById('submitBtn');
+        const modalRoot = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSub = document.getElementById('modalSub');
+        const modalBody = document.getElementById('modalBody');
+        const modalEdit = document.getElementById('modalEdit');
+        const modalDelete = document.getElementById('modalDelete');
+        const modalClose = document.getElementById('modalClose');
+        const tableWrap = document.getElementById('tableWrap'); // For scroll indicator
+
+        function init() {
+            states.forEach(s => {
+                const o = document.createElement('option'); o.value = s; o.textContent = s; stateEl.appendChild(o);
+                const p = o.cloneNode(true); filterState.appendChild(p);
+            });
+            load();
+            render();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('claimForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('resetForm').addEventListener('click', () => clearForm());
+            modalClose.onclick = closeModal;
+            filterState.addEventListener('change', render);
+            filterStatus.addEventListener('change', render);
+            let searchTimeout = null;
+            searchBox.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(render, 200);
+            });
+            // Add listener for table scroll indicator
+            tableWrap.addEventListener('scroll', () => {
+                const { scrollWidth, clientWidth, scrollLeft } = tableWrap;
+                // Add indicator class if content is wider than viewport and scroll is not at the very end
+                if (scrollWidth > clientWidth && scrollLeft < (scrollWidth - clientWidth - 2)) {
+                    tableWrap.classList.add('is-scrolling');
+                } else {
+                    tableWrap.classList.remove('is-scrolling');
+                }
+            });
+            // Initial check to see if the table should show the scroll indicator immediately
+            window.addEventListener('resize', () => { setTimeout(() => tableWrap.dispatchEvent(new Event('scroll')), 100); });
+        }
+
+        function load() {
+            try { const raw = localStorage.getItem(key); claims = raw ? JSON.parse(raw) : []; } catch (e) { claims = []; }
+            if (claims.length === 0) { claims = getSampleData(); save(); }
+        }
+        function save() { localStorage.setItem(key, JSON.stringify(claims)); }
+        function clearForm() { document.getElementById('claimForm').reset(); editIndexEl.value = ''; submitBtn.textContent = 'Submit Claim'; }
+        function getFormData() {
+            return {
+                claimId: document.getElementById('claimId').value.trim(), claimType: document.getElementById('claimType').value,
+                state: document.getElementById('state').value, district: document.getElementById('district').value.trim(),
+                village: document.getElementById('village').value.trim(), area: parseFloat(document.getElementById('area').value) || 0,
+                claimant: document.getElementById('claimant').value.trim(), dateOfClaim: document.getElementById('dateOfClaim').value,
+                status: document.getElementById('status').value, remarks: document.getElementById('remarks').value.trim(),
+                createdAt: new Date().toISOString()
+            };
+        }
+
+        function render() {
+            const sFilter = filterState.value;
+            const stFilter = filterStatus.value;
+            const q = searchBox.value.trim().toLowerCase();
+
+            const filtered = claims.filter(c =>
+                (sFilter === 'all' || c.state === sFilter) &&
+                (stFilter === 'all' || c.status === stFilter) &&
+                (!q || [c.claimId, c.claimant, c.village, c.district].some(val => val.toLowerCase().includes(q)))
+            );
+
+            claimsTbody.innerHTML = '';
+            emptyNotice.style.display = filtered.length === 0 ? 'block' : 'none';
+
+            filtered.forEach((c, idx) => {
+                const originalIndex = claims.findIndex(claim => claim.claimId === c.claimId && claim.createdAt === c.createdAt);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td>${c.claimId}</td>
+            <td><div style="font-weight:600">${c.state}</div><div style="color:#6c757d;font-size:0.8125rem">${c.district}</div></td>
+            <td>${c.village}</td> <td>${c.claimant}</td> <td>${c.claimType}</td> <td>${c.area.toFixed(2)}</td>
+            <td><span class="status ${statusClass[c.status] || 's-claimed'}">${c.status}</span></td>
+            <td class="row-actions">
+                  <button class="icon-btn view-btn">View</button> <button class="icon-btn edit-btn">Edit</button>
+            </td>`;
+                tr.querySelector('.view-btn').onclick = () => openModal(c, originalIndex);
+                tr.querySelector('.edit-btn').onclick = () => editClaim(originalIndex);
+                claimsTbody.appendChild(tr);
+            });
+            // Trigger scroll check after render
+            setTimeout(() => tableWrap.dispatchEvent(new Event('scroll')), 0);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const data = getFormData();
+            const ei = editIndexEl.value !== '' ? parseInt(editIndexEl.value, 10) : -1;
+            if (ei >= 0) { claims[ei] = { ...claims[ei], ...data }; }
+            else {
+                if (claims.some(x => x.claimId === data.claimId)) { if (!confirm('Claim ID exists. Add duplicate?')) return; }
+                claims.unshift(data);
+            }
+            save(); render(); clearForm();
+        }
+
+        function editClaim(i) {
+            const c = claims[i];
+            document.getElementById('claimId').value = c.claimId; document.getElementById('claimType').value = c.claimType;
+            document.getElementById('state').value = c.state; document.getElementById('district').value = c.district;
+            document.getElementById('village').value = c.village; document.getElementById('area').value = c.area;
+            document.getElementById('claimant').value = c.claimant; document.getElementById('dateOfClaim').value = c.dateOfClaim;
+            document.getElementById('status').value = c.status; document.getElementById('remarks').value = c.remarks || '';
+            editIndexEl.value = i;
+            submitBtn.textContent = 'Save Changes';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openModal(c, idx) {
+            modalRoot.style.display = 'flex'; modalRoot.setAttribute('aria-hidden', 'false');
+            modalTitle.textContent = c.claimId;
+            modalSub.textContent = `${c.state} · ${c.district} · ${c.village}`;
+            modalBody.innerHTML = [
+                ['Claim Type', c.claimType], ['Claimant', c.claimant], ['Area (Ha)', c.area.toFixed(2)],
+                ['Date of Claim', c.dateOfClaim], ['Status', c.status], ['Remarks', c.remarks || '—'],
+                ['Submitted', new Date(c.createdAt).toLocaleString()]
+            ].map(r => `<div class="kv"><strong>${r[0]}</strong><div>${r[1]}</div></div>`).join('');
+
+            modalEdit.onclick = () => { closeModal(); editClaim(idx); };
+            modalDelete.onclick = () => {
+                if (!confirm('Delete this claim?')) return;
+                claims.splice(idx, 1); save(); render(); closeModal();
+            };
+        }
+
+        function closeModal() { modalRoot.style.display = 'none'; modalRoot.setAttribute('aria-hidden', 'true'); }
+
+        function getSampleData() {
+            return [
+                { claimId: 'FRA-101', claimType: 'Individual', state: 'Odisha', district: 'Kandhamal', village: 'Kandha Gaon', area: 1.25, claimant: 'Sita Pradhan', dateOfClaim: '2024-08-01', status: 'Claimed', remarks: 'Initial submission', createdAt: new Date('2024-08-01T10:00:00Z').toISOString() },
+                { claimId: 'FRA-102', claimType: 'Community', state: 'Telangana', district: 'Adilabad', village: 'Bodhan', area: 12.5, claimant: 'Gram Sabha Bodhan', dateOfClaim: '2024-09-12', status: 'Verified', remarks: 'Under verification', createdAt: new Date('2024-09-12T11:30:00Z').toISOString() },
+                { claimId: 'FRA-103', claimType: 'Individual', state: 'Madhya Pradesh', district: 'Mandla', village: 'Bastarwali', area: 0.75, claimant: 'Ram Lal', dateOfClaim: '2025-03-02', status: 'Granted', remarks: 'Approved by committee', createdAt: new Date('2025-03-02T14:00:00Z').toISOString() },
+                { claimId: 'FRA-104', claimType: 'Individual', state: 'Tripura', district: 'Dhalai', village: 'Pahari', area: 0.40, claimant: 'Lalita', dateOfClaim: '2025-01-22', status: 'Rejected', remarks: 'Boundary dispute', createdAt: new Date('2025-01-22T09:45:00Z').toISOString() }
+            ];
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

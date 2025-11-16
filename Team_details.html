@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code With Canopy Team Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* Allow content to determine vertical height and enable scrolling */
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f1724, #1f2937);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            padding: 40px 15px;
+            /* Added padding for mobile safety */
+            overflow-x: hidden;
+        }
+
+        /* --- Header & Title --- */
+        .team-title {
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 3rem;
+            color: #7c3aed;
+            text-shadow: 0 0 15px #7c3aed;
+        }
+
+        /* --- Container (Using Grid for Layout) --- */
+        .outer-container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            /* Default: 2 columns on small screens, adjust in media queries */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            justify-items: center;
+        }
+
+        /* Center Logo at the Top (Separate from the Grid) */
+        .logo-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.7);
+            border: 4px solid rgba(124, 58, 237, 0.8);
+        }
+
+        /* --- Member Card Styles --- */
+        .member-wrapper {
+            /* Removed fixed width, allowing grid to control size */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            /* Take full grid column width */
+            background: rgba(28, 20, 44, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .member-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        .member {
+            width: 100%;
+            max-width: 180px;
+            /* Constrain image size slightly */
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid rgba(124, 58, 237, 0.7);
+            margin-bottom: 15px;
+        }
+
+        .member img {
+            width: 100%;
+            height: 100%;
+            /* Fix image cropping and ensure aspect ratio */
+            object-fit: cover;
+            display: block;
+        }
+
+        /* --- Text Styling --- */
+        .member-text {
+            text-align: center;
+            width: 100%;
+        }
+
+        .member-text strong {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .member-text .role {
+            display: block;
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .member-text span {
+            display: block;
+            font-size: 0.85rem;
+            color: #ffd700;
+            font-style: italic;
+            padding-top: 10px;
+            border-top: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (min-width: 1024px) {
+            .outer-container {
+                /* 3 columns on large screens */
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .team-title {
+                font-size: 2rem;
+            }
+
+            .outer-container {
+                /* 1 column on very small screens */
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .logo-section {
+                margin-bottom: 20px;
+            }
+
+            .member {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="team-title">Code With Canopy</div>
+
+    <div class="logo-section">
+        <img src="assets/logo.jpg" alt="Logo" class="logo-img">
+    </div>
+    <div class="outer-container">
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/ankit.jpg" alt="Ankit Yadav"></div>
+            <div class="member-text">
+                <strong>Ankit Yadav</strong>
+                <span class="role">Team Leader / Project Manager</span>
+                <span>"Leadership is about taking care of those in your charge."</span>
+            </div>
+        </div>
+
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/Abhinandan.png" alt="Abhinandan Dwivedi"></div>
+            <div class="member-text">
+                <strong>Abhinandan Dwivedi</strong>
+                <span class="role">Domain Expert / Research Lead</span>
+                <span>"Research is creating new knowledge."</span>
+            </div>
+        </div>
+
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/Aishwarya.jpg" alt="Aishwary Shekhar Singh"></div>
+            <div class="member-text">
+                <strong>Aishwary Shekhar Singh</strong>
+                <span class="role">Backend Developer / Technical Lead</span>
+                <span>"Code is like humor. When you have to explain it, it’s bad."</span>
+            </div>
+        </div>
+
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/Adarsh.jpg" alt="Adarsh Srivastava"></div>
+            <div class="member-text">
+                <strong>Adarsh Srivastava</strong>
+                <span class="role">Frontend Developer / UI Lead</span>
+                <span>"Good design is obvious. Great design is transparent."</span>
+            </div>
+        </div>
+
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/Arpit.jpg" alt="Arpit Chaturvedi"></div>
+            <div class="member-text">
+                <strong>Arpit Chaturvedi</strong>
+                <span class="role">Data Analyst / GIS Specialist</span>
+                <span>"Without data, you’re just another person with an opinion."</span>
+            </div>
+        </div>
+
+        <div class="member-wrapper">
+            <div class="member"><img src="assets/Anushka.jpg" alt="Anushka Singh"></div>
+            <div class="member-text">
+                <strong>Anushka Singh</strong>
+                <span class="role">Documentation / Presentation Lead</span>
+                <span>"Documentation is like a love letter to your future self."</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JS is no longer required for complex animations, leaving a placeholder for clean structure
+        // Any original onload logic is safely ignored due to the mobile-first CSS overrides.
+    </script>
+
+</body>
+
+</html>

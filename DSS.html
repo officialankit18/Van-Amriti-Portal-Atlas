@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>वनAmriti Portal & Atlas - Decision Support System</title>
+  <style>
+    :root {
+      --bg: #0D1F1C;
+      --panel: #12352F;
+      --panel-2: #0F2924;
+      --text: #E5E7EB;
+      --muted: #88A09A;
+      --accent: #22C55E;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --info: #38BDF8;
+      --border: #2D5A4F;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      color: var(--text);
+      background: linear-gradient(180deg, var(--panel-2) 0%, var(--bg) 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13, 31, 28, 0.7);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    main {
+      padding: 24px;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 400px 1fr;
+      height: calc(100vh - 80px);
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    h2 {
+      margin: 0 0 20px 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .input,
+    select {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    legend {
+      font-weight: bold;
+      color: var(--text);
+      padding: 0 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+      border-color: #065f46;
+    }
+
+    .btn.primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn.secondary {
+      background: var(--panel-2);
+    }
+
+    .btn.secondary:hover {
+      background: var(--border);
+    }
+
+    /* Results Panel */
+    #results-container {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    /* Recommendation Card */
+    .recommendation-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-left: 5px solid;
+      min-height: 220px;
+    }
+
+    .recommendation-card.eligible {
+      border-left-color: var(--accent);
+    }
+
+    .recommendation-card.ineligible {
+      border-left-color: var(--err);
+    }
+
+    .recommendation-card.enrolled {
+      border-left-color: var(--info);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .pill {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .pill.ok {
+      background: rgba(34, 197, 94, .15);
+      color: #86efac;
+    }
+
+    .pill.reject {
+      background: rgba(239, 68, 68, .15);
+      color: #fecaca;
+    }
+
+    .pill.enrolled {
+      background: rgba(56, 189, 248, .15);
+      color: var(--info);
+    }
+
+    .card-body p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .card-body strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .card-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-footer a {
+      color: var(--info);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .card-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.4rem;
+      }
+
+      main {
+        padding: 16px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .recommendation-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.2rem;
+      }
+
+      .form-group label,
+      legend {
+        font-size: 0.9rem;
+      }
+
+      .input,
+      select {
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+
+      .pill {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>वनAmriti Portal & Atlas - Decision Support System</h1>
+  </header>
+  <main>
+    <div class="input-panel card">
+      <h2>Beneficiary Profile</h2>
+      <form id="dss-form">
+        <div class="form-group">
+          <label for="beneficiary-name">Beneficiary Name / ID</label>
+          <input type="text" id="beneficiary-name" class="input" value="Rani Devi">
+        </div>
+
+        <div class="form-group">
+          <label for="land-area">Land Area (in Hectares)</label>
+          <input type="number" id="land-area" class="input" step="0.1" value="1.5">
+        </div>
+
+        <div class="form-group">
+          <label for="water-source">Primary Water Source</label>
+          <select id="water-source" class="input">
+            <option value="none">None / Rain-fed</option>
+            <option value="well">Well</option>
+            <option value="pond">Pond</option>
+            <option value="river">River / Canal</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="household-members">Household Members</label>
+          <input type="number" id="household-members" class="input" value="5">
+        </div>
+
+        <div class="form-group">
+          <label for="livelihood">Primary Livelihood</label>
+          <select id="livelihood" class="input">
+            <option value="farming">Farming</option>
+            <option value="forest_produce">Minor Forest Produce Collection</option>
+            <option value="livestock">Livestock Rearing</option>
+            <option value="labor">Daily Wage Labor</option>
+          </select>
+        </div>
+
+        <fieldset>
+          <legend>Existing Schemes Enrolled In</legend>
+          <div class="checkbox-group">
+            <input type="checkbox" id="has-pm-kisan">
+            <label for="has-pm-kisan">PM-KISAN</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="has-jjm">
+            <label for="has-jjm">Jal Jeevan Mission</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="has-mgnrega">
+            <label for="has-mgnrega">MGNREGA</label>
+          </div>
+        </fieldset>
+
+        <div class="button-group">
+          <button type="button" id="btn-load-sample" class="btn secondary">Load Sample Record</button>
+          <button type="submit" class="btn primary">Analyze & Recommend</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="results-panel card">
+      <h2>Scheme Recommendations</h2>
+      <div id="results-container">
+        <div class="placeholder">
+          <p>Fill out the beneficiary profile and click "Analyze" to see tailored scheme recommendations.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const els = {
+        form: document.getElementById('dss-form'),
+        resultsContainer: document.getElementById('results-container'),
+        btnLoadSample: document.getElementById('btn-load-sample'),
+        name: document.getElementById('beneficiary-name'),
+        landArea: document.getElementById('land-area'),
+        waterSource: document.getElementById('water-source'),
+        householdMembers: document.getElementById('household-members'),
+        livelihood: document.getElementById('livelihood'),
+        hasPmKisan: document.getElementById('has-pm-kisan'),
+        hasJjm: document.getElementById('has-jjm'),
+        hasMgnrega: document.getElementById('has-mgnrega'),
+      };
+
+      const schemes = [
+        {
+          id: 'pm_kisan',
+          name: 'PM-KISAN',
+          description: 'Provides income support to all landholding farmer families.',
+          link: 'https://pmkisan.gov.in/',
+          checkEligibility: (profile) => {
+            if (profile.landArea > 0 && profile.livelihood === 'farming') {
+              return { eligible: true, reason: 'Beneficiary is a farmer with land ownership.' };
+            }
+            return { eligible: false, reason: 'Requires land ownership and primary livelihood as farming.' };
+          }
+        },
+        {
+          id: 'jjm',
+          name: 'Jal Jeevan Mission',
+          description: 'Provides safe and adequate drinking water through household tap connections.',
+          link: 'https://jaljeevanmission.gov.in/',
+          checkEligibility: (profile) => {
+            if (profile.waterSource === 'none') {
+              return { eligible: true, reason: 'Household lacks a dedicated, safe water source.' };
+            }
+            return { eligible: false, reason: 'Household already has a water source.' };
+          }
+        },
+        {
+          id: 'mgnrega',
+          name: 'MGNREGA',
+          description: 'Guarantees 100 days of wage employment per year to rural households.',
+          link: 'https://nrega.nic.in/',
+          checkEligibility: (profile) => {
+            if (profile.householdMembers > 0) {
+              return { eligible: true, reason: 'All rural households can apply for a Job Card.' };
+            }
+            return { eligible: false, reason: 'Not a valid household.' };
+          }
+        },
+        {
+          id: 'dajgua',
+          name: 'DAJGUA (Tribal Livelihood)',
+          description: 'Enhances livelihoods from forest resources for FRA beneficiaries.',
+          link: '#',
+          checkEligibility: (profile) => {
+            if (profile.landArea > 0 && ['forest_produce', 'livestock'].includes(profile.livelihood)) {
+              return { eligible: true, reason: 'Beneficiary has FRA land and forest-based livelihood.' };
+            }
+            return { eligible: false, reason: 'Requires FRA land and forest-based livelihood.' };
+          }
+        }
+      ];
+
+      const analyzeProfile = () => {
+        const profile = {
+          name: els.name.value,
+          landArea: parseFloat(els.landArea.value) || 0,
+          waterSource: els.waterSource.value,
+          householdMembers: parseInt(els.householdMembers.value) || 0,
+          livelihood: els.livelihood.value,
+          existingSchemes: {
+            pm_kisan: els.hasPmKisan.checked,
+            jjm: els.hasJjm.checked,
+            mgnrega: els.hasMgnrega.checked
+          }
+        };
+
+        els.resultsContainer.innerHTML = '';
+
+        if (!profile.name) {
+          els.resultsContainer.innerHTML = `<div class="placeholder"><p>Please enter a beneficiary name.</p></div>`;
+          return;
+        }
+
+        schemes.forEach(scheme => {
+          let status, statusText, rationale, cardClass;
+
+          if (profile.existingSchemes[scheme.id]) {
+            status = 'enrolled';
+            statusText = 'Enrolled';
+            rationale = 'Beneficiary is already enrolled.';
+            cardClass = 'enrolled';
+          } else {
+            const result = scheme.checkEligibility(profile);
+            if (result.eligible) {
+              status = 'eligible';
+              statusText = 'Eligible';
+              rationale = result.reason;
+              cardClass = 'eligible';
+            } else {
+              status = 'ineligible';
+              statusText = 'Not Eligible';
+              rationale = result.reason;
+              cardClass = 'ineligible';
+            }
+          }
+
+          const cardHTML = `
+            <div class="recommendation-card ${cardClass}">
+              <div class="card-header">
+                <h3>${scheme.name}</h3>
+                <span class="pill ${status === 'eligible' ? 'ok' : (status === 'ineligible' ? 'reject' : 'enrolled')}">${statusText}</span>
+              </div>
+              <div class="card-body">
+                <p>${scheme.description}</p>
+                <p style="margin-top: 10px;"><strong>Rationale:</strong> ${rationale}</p>
+              </div>
+              <div class="card-footer">
+                <a href="${scheme.link}" target="_blank">Learn More &rarr;</a>
+              </div>
+            </div>
+          `;
+          els.resultsContainer.insertAdjacentHTML('beforeend', cardHTML);
+        });
+      };
+
+      const loadSampleData = () => {
+        els.name.value = 'Mangal Singh';
+        els.landArea.value = '0.8';
+        els.waterSource.value = 'none';
+        els.householdMembers.value = '4';
+        els.livelihood.value = 'forest_produce';
+        els.hasPmKisan.checked = false;
+        els.hasJjm.checked = false;
+        els.hasMgnrega.checked = true;
+      };
+
+      els.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        analyzeProfile();
+      });
+
+      els.btnLoadSample.addEventListener('click', () => {
+        loadSampleData();
+      });
+
+    });
+  </script>
+</body>
+
+</html>

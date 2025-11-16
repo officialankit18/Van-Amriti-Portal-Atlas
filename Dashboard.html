@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>वनAmriti Portal & Atlas - Dashboard</title>
+
+    <!-- Chart.js (keep CDN; say the word if you want this inlined too) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+
+    <!-- Leaflet (keep CDN; say the word if you want this inlined too) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            /* Forest theme palette */
+            --bg: #f3f7f0;
+            --card: #ffffff;
+            --ink: #0f2e1d;
+            --muted: #5a6b5f;
+            --accent: #2d6a4f;
+            --accent-2: #52b788;
+            --ring: #d9e8db;
+
+            /* Chart colors */
+            --c-ifr-claims: #2e7d32;
+            --c-ifr-titles: #81c784;
+            --c-cfr-claims: #1b5e20;
+            --c-cfr-titles: #a7f3d0;
+            --c-land-ifr: #66bb6a;
+            --c-land-cfr: #2d6a4f;
+            --c-pending: #eab308;
+            --c-distributed: #059669;
+            --c-rejected: #b91c1c;
+
+            /* Map (like the screenshot behavior) */
+            --map-outline-all: #9aa4ae;
+            /* thin outlines (context) */
+            --map-stroke: #1b4332;
+            /* 4-state outline */
+            --map-selected-stroke: #083d2d;
+            /* selected outline */
+            --map-fill: #2d6a4f;
+            /* selected fill */
+            --map-fill-dim: #a7d7c5;
+            /* dim fill for non-selected 4 states */
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, #14532d 0%, #2d6a4f 60%, #40916c 100%);
+            color: #fff;
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: clamp(20px, 2.5vw, 28px);
+            letter-spacing: .2px;
+        }
+
+        .state-name {
+            font-weight: 600;
+            opacity: .95;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .state-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .state-btn {
+            appearance: none;
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .25);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .18s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .state-btn:hover {
+            background: rgba(255, 255, 255, .2);
+            transform: translateY(-1px);
+        }
+
+        .state-btn.active {
+            background: #ecfdf5;
+            color: #064e3b;
+            border-color: #ecfdf5;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+        }
+
+        main {
+            padding: 20px 0 40px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .summary {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--ring);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .04);
+        }
+
+        .kpi {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .kpi .label {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .kpi .value {
+            font-size: clamp(20px, 2.5vw, 28px);
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .kpi .badge {
+            font-size: 12px;
+            color: #064e3b;
+            background: #dcfce7;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .details {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+
+        .detail-item .d-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 8px;
+        }
+
+        .detail-item .d-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .map-and-charts {
+            grid-template-columns: 1.1fr 2fr;
+            align-items: stretch;
+        }
+
+        .map {
+            position: relative;
+            background: #fff;
+            border: 1px solid var(--ring);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .map .map-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 2;
+            background: #0b3d2a;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #indiaMap {
+            width: 100%;
+            height: 95%;
+            border-radius: 12px;
+        }
+
+        .leaflet-container {
+            background: #f6fbf7;
+        }
+
+        .charts {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .chart-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chart-title {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: .3px;
+            color: #1f2937;
+        }
+
+        .chart-wrap {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        .claims-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--ring);
+            background: #f8faf8;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 9999;
+            background: #064e3b;
+            color: #ecfdf5;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 13px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: .25s ease;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .2);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1100px) {
+            .map-and-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .details {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            #indiaMap {
+                height: 380px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div>
+                    <div class="title">वनAmriti Portal & Atlas - Dashboard</div>
+                    <div class="state-name">Current State: <span id="state-name">ODISHA</span></div>
+                </div>
+            </div>
+
+            <div class="state-selector" aria-label="Select State">
+                <button class="state-btn" data-state="ODISHA" onclick="updateDashboard('ODISHA')">Odisha</button>
+                <button class="state-btn" data-state="MADHYA PRADESH" onclick="updateDashboard('MADHYA PRADESH')">Madhya
+                    Pradesh</button>
+                <button class="state-btn" data-state="TELANGANA"
+                    onclick="updateDashboard('TELANGANA')">Telangana</button>
+                <button class="state-btn" data-state="TRIPURA" onclick="updateDashboard('TRIPURA')">Tripura</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container grid">
+
+            <!-- Summary KPIs -->
+            <section class="grid summary">
+                <div class="card">
+                    <div class="kpi">
+                        <div>
+                            <div class="label">Claims Received</div>
+                            <div id="summary-claims-received" class="value">—</div>
+                        </div>
+                        <div class="badge">Overall</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="kpi">
+                        <div>
+                            <div class="label">Titles Distributed</div>
+                            <div id="summary-titles-distributed" class="value">—</div>
+                        </div>
+                        <div class="badge" style="background:#d1fae5;color:#064e3b;">Progress</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="kpi">
+                        <div>
+                            <div class="label">Extent of Land Recognized</div>
+                            <div id="summary-land-recognized" class="value">—</div>
+                        </div>
+                        <div class="badge" style="background:#fffbeb;color:#92400e;">Land</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Details -->
+            <section class="grid details">
+                <div class="card detail-item">
+                    <div class="d-label">Community Claims Received</div>
+                    <div id="detail-community-claims" class="d-value">—</div>
+                </div>
+                <div class="card detail-item">
+                    <div class="d-label">IFR Claims Received</div>
+                    <div id="detail-ifr-claims" class="d-value">—</div>
+                </div>
+                <div class="card detail-item">
+                    <div class="d-label">CFR Titles Distributed</div>
+                    <div id="detail-cfr-titles" class="d-value">—</div>
+                </div>
+                <div class="card detail-item">
+                    <div class="d-label">IFR Titles Distributed</div>
+                    <div id="detail-ifr-titles" class="d-value">—</div>
+                </div>
+                <div class="card detail-item">
+                    <div class="d-label">CFR Forest Land (Acres)</div>
+                    <div id="detail-cfr-land" class="d-value">—</div>
+                </div>
+                <div class="card detail-item">
+                    <div class="d-label">IFR Forest Land (Acres)</div>
+                    <div id="detail-ifr-land" class="d-value">—</div>
+                </div>
+            </section>
+
+            <!-- Map + Charts -->
+            <section class="grid map-and-charts">
+                <div class="map card">
+                    <div id="mapStateLabel" class="map-label">ODISHA</div><br><br>
+                    <div id="indiaMap"></div>
+                </div>
+
+                <div class="charts">
+                    <div class="card chart-card">
+                        <div class="chart-title">IFR Status (in Thousands)</div>
+                        <div class="chart-wrap"><canvas id="ifrChart"></canvas></div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="chart-title">CFR Status (in Thousands)</div>
+                        <div class="chart-wrap"><canvas id="cfrChart"></canvas></div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="chart-title">Extent of Forest Land Recognized (Lakh Acres)</div>
+                        <div class="chart-wrap"><canvas id="landChart"></canvas></div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="chart-title">Claims Status</div>
+                        <div class="chart-wrap"><canvas id="claimsChart"></canvas></div>
+                        <div id="claimsLegend" class="claims-meta"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        /* ========= FRA Data ========= */
+        const FRA_DASHBOARD_DATA = {
+            'ODISHA': {
+                state_name: "ODISHA",
+                summary: { claimsReceived: "736K", titlesDistributed: "471K", extentLandRecognized: "14.18 Lakh Acres" },
+                claims_detail: {
+                    communityClaimsCount: "35,024", ifrClaimsCount: "701,148",
+                    cfrTitlesCount: "8,832", ifrTitlesCount: "462,067",
+                    cfrLandAcres: "743,193", ifrLandAcres: "674,775"
+                },
+                ifr_chart: { labels: ["IFR Claims Received", "IFR Titles Distributed"], data: [701, 462], max_y: 700 },
+                cfr_chart: { labels: ["CFR Claim Received", "CFR Titles Distributed"], data: [35, 9], max_y: 40 },
+                land_chart: { labels: ["IFR Forest Land", "CFR Forest Land"], data: [6.75, 7.43], max_y: 8 },
+                claims_status: { counts: ["120,627", "470,899", "144,636"], percentages: [16.39, 63.97, 19.65], labels: ["Pending Claims", "Total Titles Distributed", "Rejected Claims"] }
+            },
+            'MADHYA PRADESH': {
+                state_name: "MADHYA PRADESH",
+                summary: { claimsReceived: "628K", titlesDistributed: "295K", extentLandRecognized: "23.67 Lakh Acres" },
+                claims_detail: {
+                    communityClaimsCount: "42,187", ifrClaimsCount: "585,326",
+                    cfrTitlesCount: "27,976", ifrTitlesCount: "266,001",
+                    cfrLandAcres: "1,462,614", ifrLandAcres: "903,333"
+                },
+                ifr_chart: { labels: ["IFR Claims Received", "IFR Titles Distributed"], data: [585, 267], max_y: 600 },
+                cfr_chart: { labels: ["CFR Claim Received", "CFR Titles Distributed"], data: [42, 28], max_y: 50 },
+                land_chart: { labels: ["IFR Forest Land", "CFR Forest Land"], data: [9.06, 14.64], max_y: 15 },
+                claims_status: { counts: ["10,229", "294,977", "322,407"], percentages: [1.67, 46.99, 51.38], labels: ["Pending Claims", "Total Titles Distributed", "Rejected Claims"] }
+            },
+            'TELANGANA': {
+                state_name: "TELANGANA",
+                summary: { claimsReceived: "655K", titlesDistributed: "231K", extentLandRecognized: "11.27 Lakh Acres" },
+                claims_detail: {
+                    communityClaimsCount: "3,427", ifrClaimsCount: "651,802",
+                    cfrTitlesCount: "721", ifrTitlesCount: "230,735",
+                    cfrLandAcres: "457,663", ifrLandAcres: "669,689"
+                },
+                ifr_chart: { labels: ["IFR Claims Received", "IFR Titles Distributed"], data: [652, 231], max_y: 700 },
+                cfr_chart: { labels: ["CFR Claim Received", "CFR Titles Distributed"], data: [3, 1], max_y: 5 },
+                land_chart: { labels: ["IFR Forest Land", "CFR Forest Land"], data: [6.70, 4.58], max_y: 8 },
+                claims_status: { counts: ["329,267", "231,456", "94,426"], percentages: [50.27, 35.32, 14.41], labels: ["Pending Claims", "Total Titles Distributed", "Rejected Claims"] }
+            },
+            'TRIPURA': {
+                state_name: "TRIPURA",
+                summary: { claimsReceived: "201K", titlesDistributed: "128K", extentLandRecognized: "4.66 Lakh Acres" },
+                claims_detail: {
+                    communityClaimsCount: "164", ifrClaimsCount: "200,537",
+                    cfrTitlesCount: "101", ifrTitlesCount: "127,931",
+                    cfrLandAcres: "552", ifrLandAcres: "465,193"
+                },
+                ifr_chart: { labels: ["IFR Claims Received", "IFR Titles Distributed"], data: [201, 128], max_y: 200 },
+                cfr_chart: { labels: ["CFR Claim Received", "CFR Titles Distributed"], data: [0.1, 0], max_y: 0.1 },
+                land_chart: { labels: ["IFR Forest Land", "CFR Forest Land"], data: [4.65, 0.01], max_y: 6 },
+                claims_status: { counts: ["3,841", "128,032", "69,948"], percentages: [1.91, 63.79, 34.98], labels: ["Pending Claims", "Total Titles Distributed", "Rejected Claims"] }
+            }
+        };
+
+        /* ========= Offline simplified real-ish boundaries for the 4 states ========= */
+        const REAL_4_STATES = {
+            "type": "FeatureCollection",
+            "features": [
+                /* ODISHA (simplified outline) */
+                {
+                    "type": "Feature", "properties": { "name": "ODISHA" }, "geometry": {
+                        "type": "Polygon", "coordinates": [[
+                            [85.02, 22.60], [86.20, 22.35], [86.90, 21.95], [87.35, 21.65], [87.50, 21.20],
+                            [87.35, 20.80], [86.90, 20.50], [86.50, 20.35], [86.10, 20.20], [85.80, 19.90],
+                            [85.55, 19.50], [85.30, 19.15], [85.00, 18.90], [84.60, 18.70], [84.10, 18.50],
+                            [83.70, 18.40], [83.30, 18.30], [82.95, 18.25], [82.60, 18.35], [82.20, 18.55],
+                            [82.05, 18.90], [82.00, 19.30], [81.95, 19.70], [81.90, 20.10], [81.95, 20.55],
+                            [82.10, 20.90], [82.40, 21.20], [82.80, 21.50], [83.20, 21.75], [83.70, 21.95],
+                            [84.20, 22.10], [84.70, 22.35], [85.02, 22.60]
+                        ]]
+                    }
+                },
+                /* MADHYA PRADESH (simplified outline) */
+                {
+                    "type": "Feature", "properties": { "name": "MADHYA PRADESH" }, "geometry": {
+                        "type": "Polygon", "coordinates": [[
+                            [74.00, 22.05], [74.60, 21.80], [75.20, 21.60], [75.90, 21.50], [76.60, 21.55],
+                            [77.20, 21.80], [77.80, 22.20], [78.40, 22.60], [79.10, 22.85], [79.70, 23.30],
+                            [80.10, 23.80], [80.60, 24.20], [81.10, 24.70], [81.50, 25.10], [81.70, 25.60],
+                            [81.60, 26.00], [81.10, 26.30], [80.50, 26.45], [79.80, 26.55], [79.10, 26.45],
+                            [78.30, 26.35], [77.70, 26.10], [77.10, 25.90], [76.40, 25.55], [75.80, 25.20],
+                            [75.30, 24.80], [74.90, 24.40], [74.50, 24.00], [74.20, 23.50], [74.00, 23.10],
+                            [74.00, 22.05]
+                        ]]
+                    }
+                },
+                /* TELANGANA (simplified outline) */
+                {
+                    "type": "Feature", "properties": { "name": "TELANGANA" }, "geometry": {
+                        "type": "Polygon", "coordinates": [[
+                            [77.30, 19.60], [77.80, 19.30], [78.40, 19.15], [78.90, 18.95], [79.40, 18.70],
+                            [79.80, 18.30], [80.00, 17.95], [79.90, 17.60], [79.50, 17.30], [79.00, 17.10],
+                            [78.40, 17.05], [77.90, 17.10], [77.50, 17.35], [77.15, 17.70], [76.90, 18.10],
+                            [76.80, 18.60], [76.90, 19.00], [77.10, 19.30], [77.30, 19.60]
+                        ]]
+                    }
+                },
+                /* TRIPURA (simplified outline) */
+                {
+                    "type": "Feature", "properties": { "name": "TRIPURA" }, "geometry": {
+                        "type": "Polygon", "coordinates": [[
+                            [91.10, 24.55], [91.35, 24.55], [91.70, 24.45], [92.00, 24.30], [92.30, 24.10],
+                            [92.60, 23.85], [92.65, 23.50], [92.55, 23.20], [92.25, 23.00], [91.95, 22.90],
+                            [91.65, 22.85], [91.35, 22.95], [91.20, 23.20], [91.10, 23.55], [91.05, 23.90],
+                            [91.05, 24.20], [91.10, 24.55]
+                        ]]
+                    }
+                }
+            ]
+        };
+
+        /* ========= Map logic (selected-state overlay) ========= */
+        const TARGET_STATES = ['ODISHA', 'MADHYA PRADESH', 'TELANGANA', 'TRIPURA'];
+        const NAME_ALIASES = { 'ORISSA': 'ODISHA' };
+
+        let map = null, outlineLayer = null, focusLayer = null, selectedLayer = null;
+        const stateLayers = {}; // key -> layer
+
+        function normName(raw) { const up = String(raw || '').trim().toUpperCase(); return NAME_ALIASES[up] || up; }
+        function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+
+        function buildOutlineFromFocus(focusGJ) {
+            // Use the same 4 states as "context outlines" (thin) to keep file small and offline.
+            return L.geoJSON(focusGJ, { style: { color: getComputedStyle(document.documentElement).getPropertyValue('--map-outline-all') || '#9aa4ae', weight: 0.8, fillOpacity: 0 } });
+        }
+
+        function buildFocus(geojson) {
+            return L.geoJSON(geojson, {
+                style: { color: getComputedStyle(document.documentElement).getPropertyValue('--map-stroke') || '#1b4332', weight: 1.2, fillColor: getComputedStyle(document.documentElement).getPropertyValue('--map-fill-dim') || '#a7d7c5', fillOpacity: 0.25 },
+                onEachFeature: (feature, layer) => {
+                    const key = normName(feature.properties.name);
+                    stateLayers[key] = layer;
+                    layer.bindTooltip(key, { sticky: true });
+
+                    layer.on('mouseover', () => { if (selectedLayer !== layer) layer.setStyle({ weight: 1.8, fillOpacity: 0.35 }); });
+                    layer.on('mouseout', () => { if (selectedLayer !== layer) layer.setStyle({ weight: 1.2, fillOpacity: 0.25 }); });
+                    layer.on('click', () => { updateDashboard(key); });
+                }
+            });
+        }
+
+        function updateSelection(key, animate = true) {
+            const layer = stateLayers[key];
+            if (!layer) return;
+            if (selectedLayer) {
+                selectedLayer.setStyle({
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--map-stroke') || '#1b4332',
+                    weight: 1.2,
+                    fillColor: getComputedStyle(document.documentElement).getPropertyValue('--map-fill-dim') || '#a7d7c5',
+                    fillOpacity: 0.25
+                });
+            }
+            selectedLayer = layer;
+            selectedLayer.setStyle({
+                color: getComputedStyle(document.documentElement).getPropertyValue('--map-selected-stroke') || '#083d2d',
+                weight: 2.5,
+                fillColor: getComputedStyle(document.documentElement).getPropertyValue('--map-fill') || '#2d6a4f',
+                fillOpacity: 0.65
+            });
+            try { map.fitBounds(layer.getBounds(), { padding: [20, 20], animate }); } catch (e) { }
+            document.getElementById('mapStateLabel').textContent = key;
+        }
+
+        function initLeaflet() {
+            map = L.map('indiaMap', { zoomControl: true, attributionControl: true }).setView([22.5, 79], 5);
+
+            // Base tiles (comment this line if you need zero network usage)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
+
+            outlineLayer = buildOutlineFromFocus(REAL_4_STATES).addTo(map);
+            focusLayer = buildFocus(REAL_4_STATES).addTo(map);
+
+            // Reset (home) control
+            const ResetControl = L.Control.extend({
+                onAdd: function () {
+                    const btn = L.DomUtil.create('div', 'leaflet-control-reset');
+                    btn.title = 'Reset view';
+                    btn.innerHTML = '⌂';
+                    L.DomEvent.on(btn, 'click', (e) => {
+                        L.DomEvent.stopPropagation(e);
+                        if (selectedLayer) {
+                            selectedLayer.setStyle({
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--map-stroke') || '#1b4332',
+                                weight: 1.2,
+                                fillColor: getComputedStyle(document.documentElement).getPropertyValue('--map-fill-dim') || '#a7d7c5',
+                                fillOpacity: 0.25
+                            });
+                            selectedLayer = null;
+                        }
+                        if (focusLayer) map.fitBounds(focusLayer.getBounds(), { padding: [20, 20], animate: true });
+                        document.getElementById('mapStateLabel').textContent = 'INDIA';
+                    });
+                    return btn;
+                },
+                onRemove: function () { }
+            });
+            (new ResetControl({ position: 'topright' })).addTo(map);
+
+            setTimeout(() => {
+                map.invalidateSize();
+                if (focusLayer) map.fitBounds(focusLayer.getBounds(), { padding: [20, 20], animate: false });
+            }, 200);
+        }
+
+        /* ========= Charts + dashboard ========= */
+        let chartIFR = null, chartCFR = null, chartLand = null, chartClaims = null;
+
+        function setActiveButton(stateName) {
+            document.querySelectorAll('.state-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.state === stateName);
+            });
+        }
+        function updateClaimsLegend(container, labels, counts, percentages, colors) {
+            const frag = document.createDocumentFragment();
+            labels.forEach((label, i) => {
+                const pill = document.createElement('div'); pill.className = 'pill';
+                const dot = document.createElement('span'); dot.className = 'dot'; dot.style.backgroundColor = colors[i] || '#999';
+                const txt = document.createElement('span'); txt.textContent = `${label}: ${counts[i]} (${percentages[i]}%)`;
+                pill.appendChild(dot); pill.appendChild(txt); frag.appendChild(pill);
+            });
+            container.innerHTML = ''; container.appendChild(frag);
+        }
+        function kTickLabel(v) { return (Number.isInteger(v) ? v : v.toFixed(1)) + 'K'; }
+        function lakhTickLabel(v) { return (Number.isInteger(v) ? v : v.toFixed(2)) + ' L'; }
+        function asNumber(x) { if (typeof x === 'number') return x; if (typeof x === 'string') return Number(x.replace(/,/g, '')); return Number(x) || 0; }
+
+        function updateDashboard(stateName) {
+            const d = FRA_DASHBOARD_DATA[stateName];
+            if (!d) { toast('No FRA dataset for ' + stateName); updateSelection(stateName, true); return; }
+
+            document.getElementById('state-name').textContent = d.state_name;
+            document.getElementById('mapStateLabel').textContent = d.state_name;
+            setActiveButton(stateName);
+
+            // Summary
+            document.getElementById('summary-claims-received').textContent = d.summary.claimsReceived;
+            document.getElementById('summary-titles-distributed').textContent = d.summary.titlesDistributed;
+            document.getElementById('summary-land-recognized').textContent = d.summary.extentLandRecognized;
+
+            // Details
+            document.getElementById('detail-community-claims').textContent = d.claims_detail.communityClaimsCount;
+            document.getElementById('detail-ifr-claims').textContent = d.claims_detail.ifrClaimsCount;
+            document.getElementById('detail-cfr-titles').textContent = d.claims_detail.cfrTitlesCount;
+            document.getElementById('detail-ifr-titles').textContent = d.claims_detail.ifrTitlesCount;
+            document.getElementById('detail-cfr-land').textContent = d.claims_detail.cfrLandAcres;
+            document.getElementById('detail-ifr-land').textContent = d.claims_detail.ifrLandAcres;
+
+            // Charts
+            const ifrCtx = document.getElementById('ifrChart').getContext('2d');
+            const cfrCtx = document.getElementById('cfrChart').getContext('2d');
+            const landCtx = document.getElementById('landChart').getContext('2d');
+            const claimsCtx = document.getElementById('claimsChart').getContext('2d');
+
+            const c_ifr_claims = getComputedStyle(document.documentElement).getPropertyValue('--c-ifr-claims').trim();
+            const c_ifr_titles = getComputedStyle(document.documentElement).getPropertyValue('--c-ifr-titles').trim();
+            const c_cfr_claims = getComputedStyle(document.documentElement).getPropertyValue('--c-cfr-claims').trim();
+            const c_cfr_titles = getComputedStyle(document.documentElement).getPropertyValue('--c-cfr-titles').trim();
+            const c_land_ifr = getComputedStyle(document.documentElement).getPropertyValue('--c-land-ifr').trim();
+            const c_land_cfr = getComputedStyle(document.documentElement).getPropertyValue('--c-land-cfr').trim();
+
+            if (!chartIFR) {
+                chartIFR = new Chart(ifrCtx, {
+                    type: 'bar',
+                    data: { labels: d.ifr_chart.labels, datasets: [{ label: 'Count (K)', data: d.ifr_chart.data, backgroundColor: [c_ifr_claims, c_ifr_titles], borderRadius: 8, borderSkipped: false }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}K` } } },
+                        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: asNumber(d.ifr_chart.max_y), ticks: { callback: kTickLabel }, grid: { color: 'rgba(0,0,0,0.06)' } } }
+                    }
+                });
+            } else {
+                chartIFR.data.labels = d.ifr_chart.labels;
+                chartIFR.data.datasets[0].data = d.ifr_chart.data;
+                chartIFR.options.scales.y.suggestedMax = asNumber(d.ifr_chart.max_y);
+                chartIFR.update();
+            }
+
+            if (!chartCFR) {
+                chartCFR = new Chart(cfrCtx, {
+                    type: 'bar',
+                    data: { labels: d.cfr_chart.labels, datasets: [{ label: 'Count (K)', data: d.cfr_chart.data, backgroundColor: [c_cfr_claims, c_cfr_titles], borderRadius: 8, borderSkipped: false }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}K` } } },
+                        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: asNumber(d.cfr_chart.max_y), ticks: { callback: kTickLabel }, grid: { color: 'rgba(0,0,0,0.06)' } } }
+                    }
+                });
+            } else {
+                chartCFR.data.labels = d.cfr_chart.labels;
+                chartCFR.data.datasets[0].data = d.cfr_chart.data;
+                chartCFR.options.scales.y.suggestedMax = asNumber(d.cfr_chart.max_y);
+                chartCFR.update();
+            }
+
+            if (!chartLand) {
+                chartLand = new Chart(landCtx, {
+                    type: 'bar',
+                    data: { labels: d.land_chart.labels, datasets: [{ label: 'Lakh Acres', data: d.land_chart.data, backgroundColor: [c_land_ifr, c_land_cfr], borderRadius: 8, borderSkipped: false }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} L` } } },
+                        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: asNumber(d.land_chart.max_y), ticks: { callback: lakhTickLabel }, grid: { color: 'rgba(0,0,0,0.06)' } } }
+                    }
+                });
+            } else {
+                chartLand.data.labels = d.land_chart.labels;
+                chartLand.data.datasets[0].data = d.land_chart.data;
+                chartLand.options.scales.y.suggestedMax = asNumber(d.land_chart.max_y);
+                chartLand.update();
+            }
+
+            const clsLabels = d.claims_status.labels, clsPerc = d.claims_status.percentages, clsCounts = d.claims_status.counts;
+            const clsColors = ['#eab308', '#059669', '#b91c1c'];
+
+            if (!chartClaims) {
+                chartClaims = new Chart(claimsCtx, {
+                    type: 'doughnut',
+                    data: { labels: clsLabels, datasets: [{ data: clsPerc, backgroundColor: clsColors, borderColor: '#fff', borderWidth: 2, hoverOffset: 6 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } } } }
+                });
+            } else {
+                chartClaims.data.labels = clsLabels; chartClaims.data.datasets[0].data = clsPerc;
+                chartClaims.data.datasets[0].backgroundColor = clsColors; chartClaims.update();
+            }
+
+            updateClaimsLegend(document.getElementById('claimsLegend'), clsLabels, clsCounts, clsPerc, clsColors);
+
+            // Map selection to match UI
+            updateSelection(stateName, true);
+        }
+
+        // Boot
+        window.addEventListener('DOMContentLoaded', () => {
+            initLeaflet();
+            updateDashboard('ODISHA');
+        });
+    </script>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+
+</html>

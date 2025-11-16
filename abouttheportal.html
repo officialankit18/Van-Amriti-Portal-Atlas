@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>About the Portal • वनAmriti</title>
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"/>
+
+  <style>
+    :root{
+      --green:#2E7D32;
+      --green-dark:#1B5E20;
+      --accent:#FFB300;
+      --bg:#f7faf7;
+      --text:#1e2a1f;
+      --card:#ffffff;
+      --line:#e6e9ed;
+      --blue-dark:#0d2b6f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text)}
+    h1,h2,h3{font-family:'Poppins',sans-serif;font-weight:700}
+    .container{width:92%;max-width:1100px;margin:0 auto}
+
+    /* BRAND BAR */
+    .brandbar{background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 5px rgba(0,0,0,.05)}
+    .brandbar .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+    .brand-left{display:flex;align-items:center;gap:12px}
+    .brand-logo-img{height:60px;width:auto;object-fit:contain}
+    .brand-title h1{font-size:28px;margin:0;color:black(--blue-dark)}
+    .brand-title p{margin:0;color:#6b7b72;font-size:12px}
+    .brand-right img.sb-logo{height:56px;width:auto;object-fit:contain}
+
+    /* GREEN NAV BAR */
+    .mainnav{background:var(--green);position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .nav-inner{display:flex;align-items:center;gap:6px}
+    .menu-toggle{display:none;margin-left:auto;background:transparent;border:1px solid #cfd8dc;color:#e7ffef;padding:8px 10px;border-radius:6px;cursor:pointer}
+    .nav-links{list-style:none;display:flex;align-items:center;gap:2px;flex:1}
+    .nav-links a{display:flex;align-items:center;gap:8px;color:#fff;text-decoration:none;padding:12px 16px;border-radius:6px;transition:background .2s ease}
+    .nav-links a:hover{background:var(--green-dark)}
+    .nav-links a.active{background:var(--green-dark)}
+    .nav-links .push-right{margin-left:auto}
+    .nav-links .login-btn{background:var(--accent);color:#1b2a2f;margin:6px 0;padding:8px 14px;border-radius:6px}
+    .nav-links .login-btn:hover{background:#FFA000}
+
+    /* Hero (single image) */
+    .hero{
+      background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.35)), url('assets/about-hero.jpg') center/cover no-repeat;
+      color:#fff;
+    }
+    .hero .wrap{padding:68px 0}
+    .hero h2{font-size:40px;margin-bottom:8px}
+    .hero p{font-size:18px;max-width:760px;opacity:.96}
+    .hero .actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+    .hero .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid #cfd8cf;background:#fff;color:var(--green-dark)}
+    .hero .btn-primary{background:var(--accent);border-color:var(--accent);color:#1b2a2f}
+    .hero .ghost{background:transparent;border:2px solid #fff;color:#fff}
+
+    /* Sections */
+    section{padding:34px 0}
+    .lead{font-size:18px;color:#4a5a4a}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+    /* Feature item */
+    .feature{display:flex;gap:14px;align-items:flex-start}
+    .feature .ico{width:42px;height:42px;border-radius:8px;background:#e9f5ea;color:var(--green);display:grid;place-items:center;font-size:18px;flex:0 0 42px}
+    .feature h4{margin:2px 0 4px;font-size:18px}
+
+    /* Lists */
+    .list h4{margin-bottom:6px;color:var(--green-dark)}
+    .list ul{margin-left:18px;line-height:1.7}
+
+    /* Image block */
+    .img-block{display:block;width:100%;border-radius:12px;border:1px solid var(--line);height:500px;object-fit:contain}
+    .caption{font-size:13px;color:#667866;margin-top:6px}
+
+    footer{padding:20px 0 40px;color:#475b47;text-align:center}
+
+    /* ========== RESPONSIVE ========== */
+
+    /* Large tablets */
+    @media (max-width: 1024px){
+      .brand-title h1{font-size:26px}
+      .hero h2{font-size:36px}
+      .nav-links a{padding:10px 14px}
+    }
+
+    /* Tablets and below */
+    @media (max-width: 900px){
+      .menu-toggle{display:inline-flex}
+      .nav-links{display:none;flex-direction:column;width:100%;padding:8px}
+      .nav-links.open{display:flex}
+      .nav-links .push-right{margin-left:0}
+      .nav-links a{padding:12px 14px;width:100%;justify-content:center}
+      .nav-links .login-btn{margin:8px auto}
+      .grid-2{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr 1fr}
+      .brandbar .row{flex-wrap:wrap}
+      .brand-right{width:100%;display:flex;justify-content:flex-end}
+      .hero .wrap{padding:56px 0}
+    }
+
+    /* Phones */
+    @media (max-width: 600px){
+      .grid-3{grid-template-columns:1fr}
+      .brand-logo-img{height:48px}
+      .brand-title h1{font-size:22px}
+      .brand-title p{font-size:11px}
+      .hero h2{font-size:30px}
+      .hero p{font-size:16px}
+      .hero .actions{gap:8px}
+      .hero .btn,.hero .btn-primary,.hero .ghost{width:100%;justify-content:center}
+      .img-block{height:auto;max-height:60vh}
+    }
+
+    /* Very small phones */
+    @media (max-width: 380px){
+      .brand-title h1{font-size:20px}
+      .hero .wrap{padding:44px 0}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BRAND BAR -->
+  <div class="brandbar">
+    <div class="container row">
+      <div class="brand-left">
+        <img src="assets/national.png" alt="Government of India emblem" class="brand-logo-img">
+        <div class="brand-title">
+          <h1>वनAmriti Portal & Atlas</h1>
+          <p>FRA Atlas • WebGIS • Decision Support</p>
+        </div>
+      </div>
+      <div class="brand-right">
+        <img src="assets/s.png" alt="Swachh Bharat" class="sb-logo">
+      </div>
+    </div>
+  </div>
+
+  <!-- GREEN NAV BAR -->
+  <nav class="mainnav" role="navigation" aria-label="Primary">
+    <div class="container nav-inner">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-links" id="mainNav">
+        <li><a href="Index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="ab1.html"><i class="fa-solid fa-scale-balanced"></i> About the Act</a></li>
+        <li><a href="abouttheportal.html" class="active"><i class="fa-solid fa-circle-info"></i> About the Portal</a></li>
+        <li><a href="mapConsumer.html" target="_blank"><i class="fa-solid fa-location-dot"></i> Check Status</a></li>
+        <li><a href="Dashboard.html"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+        <li><a href="Team_details.html"><i class="fa-solid fa-users"></i> Team</a></li>
+        <li class="push-right"></li>
+        <li><a href="login.html" class="login-btn"><i class="fa-regular fa-user"></i> Login</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container wrap">
+      <h2>About the Portal</h2>
+      <p>वनAmriti is a simple, secure and standards-based platform to digitize FRA records, map village assets using satellite data, visualize everything on a WebGIS Atlas and help departments layer schemes through an explainable Decision Support System.</p>
+      <div class="actions">
+        <a href="mapConsumer.html" class="btn btn-primary"><i class="fa-solid fa-map-location-dot"></i> Open Atlas</a>
+        <a href="https://tribal.nic.in/FRA.aspx" target="_blank" class="btn ghost"><i class="fa-solid fa-scale-balanced"></i> FRA Guidelines</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section>
+    <div class="container">
+      <h3 style="color:var(--green-dark);margin-bottom:8px;">What is वनAmriti?</h3>
+      <p class="lead">A unified portal to bring together legacy FRA claims, community/village boundaries, and asset layers (ponds, cropland, forests, homesteads) in one place. It supports districts with clean data, clear visuals, and transparent recommendations for scheme convergence.</p>
+    </div>
+  </section>
+
+  <!-- Key features -->
+  <section>
+    <div class="container">
+      <h3 style="color:var(--green-dark);margin-bottom:10px;">Key features</h3>
+      <div class="grid-2">
+        <div class="card feature">
+          <div class="ico"><i class="fa-solid fa-file-circle-check"></i></div>
+          <div>
+            <h4>Digitized FRA records</h4>
+            <p>OCR + field extraction to standardize IFR/CR/CFR data with audit trails.</p>
+          </div>
+        </div>
+        <div class="card feature">
+          <div class="ico"><i class="fa-solid fa-satellite-dish"></i></div>
+          <div>
+            <h4>AI/RS asset mapping</h4>
+            <p>Satellite-based layers of ponds, cropland, forest cover and built-up areas.</p>
+          </div>
+        </div>
+        <div class="card feature">
+          <div class="ico"><i class="fa-solid fa-map-location-dot"></i></div>
+          <div>
+            <h4>WebGIS Atlas</h4>
+            <p>Filter by state/district/village, view FRA status and download summaries.</p>
+          </div>
+        </div>
+        <div class="card feature">
+          <div class="ico"><i class="fa-solid fa-robot"></i></div>
+          <div>
+            <h4>Explainable DSS</h4>
+            <p>Simple rules highlight where to prioritize water assets or scheme linkages.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Components -->
+  <section>
+    <div class="container grid-2">
+      <div class="card list">
+        <h4><i class="fa-solid fa-file-lines"></i> Digitization</h4>
+        <ul>
+          <li>Scan/OCR of legacy claims and orders</li>
+          <li>Standard fields: claimant, village, type, area, status</li>
+          <li>Quality checks and version history</li>
+        </ul>
+      </div>
+      <div class="card list">
+        <h4><i class="fa-solid fa-seedling"></i> AI/RS Mapping</h4>
+        <ul>
+          <li>Open satellite sources (Sentinel/Landsat)</li>
+          <li>Basic land-use classes and water bodies</li>
+          <li>Periodic updates for change tracking</li>
+        </ul>
+      </div>
+      <div class="card list">
+        <h4><i class="fa-solid fa-layer-group"></i> Atlas</h4>
+        <ul>
+          <li>IFR/CR/CFR status by village</li>
+          <li>Asset overlays and simple charts</li>
+          <li>PDF/CSV exports for field teams</li>
+        </ul>
+      </div>
+      <div class="card list">
+        <h4><i class="fa-solid fa-lightbulb"></i> Decision Support</h4>
+        <ul>
+          <li>Clear rules and reasons (no black box)</li>
+          <li>Water-stress based prioritization</li>
+          <li>Ready for scheme convergence</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture image -->
+  <section>
+    <div class="container">
+      <h3 style="color:var(--green-dark);margin-bottom:10px;">How it fits together</h3>
+    </div>
+    <div class="container">
+      <img class="img-block" src="assets/arc.jpg" alt="VanAdhikar high-level architecture">
+      <div class="caption">High‑level flow: Digitization → Asset Mapping → Atlas → DSS.</div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section>
+    <div class="container grid-2">
+      <div class="card">
+        <h4 style="margin-bottom:6px;color:var(--green-dark)"><i class="fa-solid fa-shield-halved"></i> Privacy & access</h4>
+        <p>Public view shows only aggregated, PII‑free information. Named claimant data is visible only to authorized roles as per policy.</p>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:6px;color:var(--green-dark)"><i class="fa-solid fa-hands-helping"></i> For districts</h4>
+        <p>Clean lists for verification, easy maps for reviews, and simple recommendations to plan water/land works with communities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="container card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <p style="margin:0">Open the Atlas to explore FRA status and asset layers for your area.</p>
+      <div style="display:flex;gap:10px">
+        <a href="mapConsumer.html" class="btn btn-primary"><i class="fa-solid fa-map"></i> Open Atlas</a>
+        <a href="https://tribal.nic.in/FRA.aspx" target="_blank" class="btn"><i class="fa-solid fa-link"></i> FRA Guidelines</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© वनAmriti Prototype • For SIH demo. Public views hide PII.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    document.getElementById('menuToggle').addEventListener('click', ()=>{
+      document.getElementById('mainNav').classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>वनAmriti Portal & Atlas - Map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* --- GLOBAL & BASE STYLES --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --header-height: 81px;
+      --primary-green: #2e7d32;
+    }
+
+    html,
+    body {
+      height: 100vh;
+      overflow: hidden;
+      font-family: "Roboto", sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #f9f9f9;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+    }
+
+    /* --- HEADER CSS --- */
+    header {
+      background-color: #ffffff;
+      padding: 15px 0;
+      border-bottom: 1px solid #ddd;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      flex-shrink: 0;
+    }
+
+    .navbar-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-green);
+    }
+
+    .logo img {
+      height: 50px;
+      margin-right: 15px;
+    }
+
+    .logo-text h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    /* NEW: Hamburger Toggle Icon */
+    .menu-toggle {
+      display: none;
+      /* Hide on desktop */
+      font-size: 1.8rem;
+      color: var(--primary-green);
+      cursor: pointer;
+    }
+
+    /* Desktop Nav Links */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links li {
+      margin-left: 35px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-green);
+    }
+
+    .login-btn {
+      background-color: var(--primary-green);
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background-color: #1b5e20;
+    }
+
+    /* --- MAIN CONTENT LAYOUT --- */
+    .container {
+      display: flex;
+      flex-grow: 1;
+      height: calc(100vh - var(--header-height));
+    }
+
+    .sidebar {
+      flex-basis: 400px;
+      padding: 1.5rem;
+      background-color: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    select:disabled {
+      background-color: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: #12c412;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0d8c0d;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      font-weight: bold;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex-grow: 1;
+      height: 1px;
+      background: #ddd;
+      margin: 0 1rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Map Container */
+    #map {
+      flex-grow: 1;
+      height: 100%;
+      min-height: 400px;
+      background-color: #e0e0e0;
+    }
+
+    .leaflet-tooltip-permanent {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #12c412;
+      border-radius: 4px;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* --- RESPONSIVE DESIGN: Tablet and Mobile (Max-width 850px) --- */
+    @media screen and (max-width: 850px) {
+
+      html,
+      body {
+        height: auto;
+        overflow: visible;
+      }
+
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .sidebar {
+        flex-basis: auto;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      #map {
+        height: 50vh;
+        min-height: 300px;
+      }
+
+      /* --- Header Adjustments for Mobile --- */
+      header {
+        padding: 15px 10px;
+      }
+
+      .navbar {
+        /* Align items to the left and manage space */
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .logo {
+        margin-right: auto;
+        /* Push the menu toggle to the right */
+      }
+
+      .menu-toggle {
+        display: block;
+        /* Show hamburger icon */
+      }
+
+      .nav-links {
+        /* Initially hide the menu off-screen */
+        position: absolute;
+        top: 80px;
+        /* Below the header */
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #fff;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid #ddd;
+        padding: 10px 0;
+        transform: translateX(-100%);
+        /* Hide off-screen */
+        transition: transform 0.3s ease-in-out;
+      }
+
+      /* Class toggled by JavaScript to show the menu */
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      .nav-links li {
+        margin: 0;
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 10px 20px;
+        width: 100%;
+      }
+
+      .login-btn {
+        margin-top: 10px;
+        background-color: transparent;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+      }
+
+      .login-btn:hover {
+        background-color: var(--primary-green);
+        color: #fff;
+      }
+    }
+
+    /* --- RESPONSIVE DESIGN: Small Mobile (Max-width 600px) --- */
+    @media screen and (max-width: 600px) {
+      .logo-text h1 {
+        font-size: 16px;
+      }
+
+      .logo img {
+        height: 35px;
+      }
+
+      .sidebar {
+        padding: 1rem;
+      }
+
+      .form-group label {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="navbar-container navbar">
+      <a href="#" class="logo">
+        <img src="./assets/national.png" alt="Government Emblem" />
+        <div class="logo-text">
+          <h1>वनAmriti Portal & Atlas - Map</h1>
+        </div>
+      </a>
+
+      <div class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="Index.html">Home</a></li>
+        <li><a href="about.html" target="_blank">About the Act</a></li>
+        <li><a href="#">Check Status</a></li>
+        <li><a href="login.html" class="login-btn">Login</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="sidebar">
+      <form id="land-search-form" onsubmit="return false;">
+        <h2>Search by Unique ID</h2>
+        <div class="form-group">
+          <label for="unique-id-input">Enter Farmer's Unique ID:</label>
+          <input type="text" id="unique-id-input" placeholder="e.g., UP001" />
+        </div>
+        <button type="button" id="search-by-id-btn">Find on Map</button>
+
+        <div class="divider">OR</div>
+
+        <h2>Search by Location</h2>
+        <div class="form-group">
+          <label for="state-select">State:</label>
+          <select id="state-select">
+            <option value="">-- Select State --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="district-select">District:</label>
+          <select id="district-select" disabled>
+            <option value="">-- Select District --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tehsil-select">Tehsil / Block:</label>
+          <select id="tehsil-select" disabled>
+            <option value="">-- Select Tehsil --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="village-select">Village:</label>
+          <select id="village-select" disabled>
+            <option value="">-- Select Village --</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="farmer-select-container">
+          <label for="farmer-select">Filter by Farmer in Village:</label>
+          <select id="farmer-select"></select>
+        </div>
+      </form>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // --- JAVASCRIPT FOR HAMBURGER MENU ---
+      const menuToggle = document.getElementById('menu-toggle');
+      const navLinks = document.getElementById('nav-links');
+
+      menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+      });
+
+      // Close menu if a link is clicked (useful for single-page apps)
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (navLinks.classList.contains('open')) {
+            navLinks.classList.remove('open');
+          }
+        });
+      });
+
+
+      // --- ORIGINAL GIS/MAP FUNCTIONALITY ---
+      const landRecords = [
+        {
+          uniqueId: "UP001",
+          farmerName: "Ramesh Kumar",
+          state: "Uttar Pradesh",
+          district: "Ayodhya",
+          tehsil: "Sohawal",
+          village: "Bhautipratappur",
+          geometry: [
+            [26.56, 82.55],
+            [26.56, 82.56],
+            [26.555, 82.56],
+            [26.555, 82.55],
+          ],
+        },
+        {
+          uniqueId: "UP004",
+          farmerName: "Sita Devi",
+          state: "Uttar Pradesh",
+          district: "Ayodhya",
+          tehsil: "Sohawal",
+          village: "Bhautipratappur",
+          geometry: [
+            [26.562, 82.562],
+            [26.562, 82.57],
+            [26.558, 82.57],
+            [26.558, 82.562],
+          ],
+        },
+        {
+          uniqueId: "UP005",
+          farmerName: "Amit Singh",
+          state: "Uttar Pradesh",
+          district: "Ayodhya",
+          tehsil: "Sohawal",
+          village: "Bhautipratappur",
+          geometry: [
+            [26.554, 82.545],
+            [26.554, 82.553],
+            [26.55, 82.553],
+            [26.55, 82.545],
+          ],
+        },
+        {
+          uniqueId: "UP002",
+          farmerName: "Sunita Sharma",
+          state: "Uttar Pradesh",
+          district: "Ayodhya",
+          tehsil: "Sadar",
+          village: "Ranopali",
+          geometry: [
+            [26.79, 82.19],
+            [26.79, 82.2],
+            [26.78, 82.2],
+            [26.78, 82.19],
+          ],
+        },
+        {
+          uniqueId: "UP003",
+          farmerName: "Vijay Patel",
+          state: "Uttar Pradesh",
+          district: "Lucknow",
+          tehsil: "Sadar",
+          village: "Gosainganj",
+          geometry: [
+            [26.75, 81.04],
+            [26.75, 81.05],
+            [26.74, 81.05],
+            [26.74, 81.04],
+          ],
+        },
+        {
+          uniqueId: "MP001",
+          farmerName: "Prakash Jain",
+          state: "Madhya Pradesh",
+          district: "Indore",
+          tehsil: "Indore",
+          village: "Kanadia",
+          geometry: [
+            [22.72, 75.92],
+            [22.72, 75.93],
+            [22.71, 75.93],
+            [22.71, 75.92],
+          ],
+        },
+        {
+          uniqueId: "MP002",
+          farmerName: "Geeta Verma",
+          state: "Madhya Pradesh",
+          district: "Bhopal",
+          tehsil: "Huzur",
+          village: "Kolar",
+          geometry: [
+            [23.18, 77.4],
+            [23.18, 77.41],
+            [23.17, 77.41],
+            [23.17, 77.4],
+          ],
+        },
+      ];
+      const initialCoords = [26.5615, 82.5541];
+      const map = L.map("map").setView(initialCoords, 12);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(map);
+      let currentLayer = null;
+      const farmerSelectContainer = document.getElementById(
+        "farmer-select-container"
+      );
+      const farmerSelect = document.getElementById("farmer-select");
+      const uniqueIdInput = document.getElementById("unique-id-input");
+      const searchByIdBtn = document.getElementById("search-by-id-btn");
+      const stateSelect = document.getElementById("state-select");
+      const districtSelect = document.getElementById("district-select");
+      const tehsilSelect = document.getElementById("tehsil-select");
+      const villageSelect = document.getElementById("village-select");
+      villageSelect.addEventListener("change", () => {
+        const t = villageSelect.value;
+        t && (displayVillageParcels(t), populateFarmersByVillage(t));
+      });
+      farmerSelect.addEventListener("change", () => {
+        const t = farmerSelect.value;
+        "all" === t
+          ? displayVillageParcels(villageSelect.value)
+          : findAndDisplayRecordById(t);
+      });
+      searchByIdBtn.addEventListener("click", () => {
+        findAndDisplayRecordById(uniqueIdInput.value.trim());
+      });
+      function populateFarmersByVillage(t) {
+        const e = landRecords.filter((e) => e.village === t);
+        farmerSelect.innerHTML =
+          '<option value="all">-- Show All Parcels in Village --</option>';
+        e.forEach((t) => {
+          const e = document.createElement("option");
+          (e.value = t.uniqueId),
+            (e.textContent = `${t.uniqueId} - ${t.farmerName}`),
+            farmerSelect.appendChild(e);
+        });
+        farmerSelectContainer.classList.remove("hidden");
+        farmerSelect.disabled = !1;
+      }
+      function findAndDisplayRecordById(t) {
+        if (!t) return;
+        const e = landRecords.find(
+          (e) => e.uniqueId.toLowerCase() === t.toLowerCase()
+        );
+        e
+          ? (villageSelect.value !== e.village &&
+            ((stateSelect.value = e.state),
+              stateSelect.dispatchEvent(new Event("change")),
+              (districtSelect.value = e.district),
+              districtSelect.dispatchEvent(new Event("change")),
+              (tehsilSelect.value = e.tehsil),
+              tehsilSelect.dispatchEvent(new Event("change")),
+              (villageSelect.value = e.village),
+              populateFarmersByVillage(e.village)),
+            (farmerSelect.value = e.uniqueId),
+            (uniqueIdInput.value = e.uniqueId),
+            displaySingleParcel(e))
+          : alert("Unique ID not found in records.");
+      }
+      function clearMap() {
+        currentLayer &&
+          (map.removeLayer(currentLayer), (currentLayer = null));
+      }
+      function displaySingleParcel(t) {
+        if (t && t.geometry) {
+          clearMap();
+          const e = L.polygon(t.geometry, { color: "#ff0000", weight: 4 });
+          e.bindTooltip(`ID: ${t.uniqueId}<br>Farmer: ${t.farmerName}`, {
+            permanent: !0,
+            direction: "center",
+          }),
+            (currentLayer = e.addTo(map)),
+            map.fitBounds(currentLayer.getBounds());
+        }
+      }
+      function displayVillageParcels(t) {
+        if (t) {
+          clearMap();
+          const e = landRecords.filter((e) => e.village === t);
+          if (0 === e.length)
+            return alert(`No records found for village: ${t}`);
+          const l = L.featureGroup();
+          e.forEach((t) => {
+            const e = L.polygon(t.geometry, { color: "#12c412", weight: 2 });
+            e.bindTooltip(`ID: ${t.uniqueId}<br>Farmer: ${t.farmerName}`, {
+              permanent: !0,
+              direction: "center",
+            }),
+              l.addLayer(e);
+          }),
+            (currentLayer = l.addTo(map)),
+            map.fitBounds(currentLayer.getBounds());
+        }
+      }
+      function populateDropdown(t, e) {
+        t.innerHTML = '<option value="">-- Select --</option>';
+        e.forEach((e) => {
+          const l = document.createElement("option");
+          (l.value = e), (l.textContent = e), t.appendChild(l);
+        });
+        t.disabled = !1;
+      }
+      function resetDropdowns(...t) {
+        t.forEach((t) => {
+          (t.innerHTML = '<option value="">-- Select --</option>'),
+            (t.disabled = !0);
+        });
+        farmerSelectContainer.classList.add("hidden");
+        clearMap();
+        map.setView(initialCoords, 12);
+      }
+      stateSelect.addEventListener("change", () => {
+        const t = stateSelect.value;
+        resetDropdowns(
+          districtSelect,
+          tehsilSelect,
+          villageSelect,
+          farmerSelect
+        ),
+          t &&
+          populateDropdown(districtSelect, [
+            ...new Set(
+              landRecords
+                .filter((e) => e.state === t)
+                .map((t) => t.district)
+            ),
+          ]);
+      });
+      districtSelect.addEventListener("change", () => {
+        const t = districtSelect.value;
+        resetDropdowns(tehsilSelect, villageSelect, farmerSelect),
+          t &&
+          populateDropdown(tehsilSelect, [
+            ...new Set(
+              landRecords
+                .filter((e) => e.district === t)
+                .map((t) => t.tehsil)
+            ),
+          ]);
+      });
+      tehsilSelect.addEventListener("change", () => {
+        const t = tehsilSelect.value;
+        resetDropdowns(villageSelect, farmerSelect),
+          t &&
+          populateDropdown(villageSelect, [
+            ...new Set(
+              landRecords
+                .filter((e) => e.tehsil === t)
+                .map((t) => t.village)
+            ),
+          ]);
+      });
+      (function () {
+        const t = [...new Set(landRecords.map((t) => t.state))];
+        populateDropdown(stateSelect, t);
+      })();
+    });
+  </script>
+</body>
+
+</html>

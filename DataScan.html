@@ -1,0 +1,810 @@
+
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>वनAmriti Portal & Atlas - Document Digitization & Mapper</title>
+  <style>
+    /* ============================ THEME & RESPONSIVE STYLES ============================ */
+    :root {
+      --bg: #0D1F1C;
+      --panel: #12352F;
+      --panel-2: #0F2924;
+      --text: #E5E7EB;
+      --muted: #88A09A;
+      --accent: #22C55E;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --info: #6EE7B7;
+      --border: #2D5A4F;
+      --chip: #315C52;
+      --max-width: 1200px;
+      --gutter: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      color: var(--text);
+      background: linear-gradient(180deg, var(--panel-2) 0%, var(--bg) 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.3;
+    }
+
+    /* Header */
+    header {
+      padding: 14px var(--gutter);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(13, 31, 28, 0.72);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    header .right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    header .badge {
+      background: var(--info);
+      color: var(--bg);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Page layout */
+    main {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 360px 1fr;
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1100px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+    }
+
+    /* Card */
+    .card {
+      background:
+        radial-gradient(1200px 600px at -200px -200px, rgba(110, 231, 183, 0.06), transparent 50%),
+        radial-gradient(1200px 600px at 110% -100px, rgba(34, 197, 94, 0.06), transparent 50%),
+        var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      overflow-y: auto;
+      display: block;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Buttons */
+    .btn {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #2a4c41 0%, #12352F 100%);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn.secondary {
+      background: var(--panel-2);
+    }
+
+    .btn.success {
+      background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+      border-color: #065f46;
+    }
+
+    .btn.warn {
+      background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
+      border-color: #92400e;
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* Inputs */
+    .input,
+    select,
+    textarea {
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 120px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New";
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 900px) {
+
+      .grid.cols-2,
+      .grid.cols-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dropzone {
+      border: 2px dashed var(--chip);
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      background: var(--panel-2);
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--chip);
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .stepper {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .step .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #334155;
+    }
+
+    .step.done .dot {
+      background: var(--accent);
+    }
+
+    .step.running .dot {
+      background: var(--info);
+    }
+
+    .step.err .dot {
+      background: var(--err);
+    }
+
+    .logs {
+      background: var(--panel-2);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      height: 160px;
+      overflow: auto;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+    }
+
+    .log.info {
+      color: var(--info);
+    }
+
+    .log.warn {
+      color: var(--warn);
+    }
+
+    .log.err {
+      color: var(--err);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: block;
+    }
+
+    .table thead {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .table tbody {
+      display: block;
+      max-height: 300px;
+      overflow: auto;
+      width: 100%;
+    }
+
+    .table th,
+    .table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    .table th {
+      background: var(--panel-2);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    /* Make table horizontally scrollable on narrow devices */
+    .table-wrapper {
+      overflow: auto;
+      border-radius: 10px;
+    }
+
+    .table-inner {
+      min-width: 900px;
+    }
+
+    .pill {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .pill.ok {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border-color: #14532d;
+    }
+
+    .pill.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+      border-color: #7c2d12;
+    }
+
+    .pill.reject {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fecaca;
+      border-color: #7f1d1d;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 340px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    details.instructions summary {
+      cursor: pointer;
+      color: var(--info);
+      margin-bottom: 6px;
+    }
+
+    code.inline {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 8px 0 20px 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 0px;
+    }
+
+    legend {
+      font-weight: bold;
+      color: var(--text);
+      padding: 0 0.5rem;
+      font-size: 13px;
+    }
+
+    .area-label {
+      background: rgba(18, 53, 47, 0.85);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      color: var(--text);
+      font-weight: bold;
+      font-size: 14px;
+      padding: 5px 10px;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ---------------- Responsive tweaks ---------------- */
+    @media (max-width: 1100px) {
+      header {
+        padding: 12px 14px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      header h1 {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 12px;
+      }
+
+      .btn {
+        font-size: 13px;
+        padding: 9px 10px;
+        width: 100%;
+      }
+
+      .logs {
+        height: 140px;
+      }
+
+      .table-inner {
+        min-width: 700px;
+      }
+
+      #map {
+        min-height: 300px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 10px 12px;
+      }
+
+      header h1 {
+        font-size: 15px;
+      }
+
+      .card {
+        padding: 10px;
+        border-radius: 12px;
+      }
+
+      main {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .grid.cols-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.cols-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .table-inner {
+        min-width: 600px;
+      }
+
+      .logs {
+        height: 120px;
+        font-size: 11px;
+      }
+
+      .step {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+
+      #map {
+        min-height: 260px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      header h1 {
+        font-size: 14px;
+      }
+
+      .muted {
+        font-size: 12px;
+      }
+
+      .table-inner {
+        min-width: 520px;
+      }
+
+      #map {
+        min-height: 220px;
+      }
+    }
+
+    /* small visual niceties for focus / accessibility */
+    .input:focus,
+    textarea:focus,
+    select:focus,
+    .btn:focus {
+      outline: 2px solid rgba(110, 231, 183, 0.12);
+      outline-offset: 2px;
+    }
+  </style>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+</head>
+
+<body>
+  <header>
+    <h1>वनAmriti Portal & Atlas - Document Digitization & Mapper</h1>
+    <div class="right">
+      <span class="badge">OCR + NER + Geocoding + GIS</span>
+      <button id="btnSample" class="btn secondary">Try Sample</button>
+      <button id="btnProcess" class="btn success">Start Processing</button>
+    </div>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Inputs</h2>
+      <div class="grid cols-2">
+        <div class="col"><label>Mode</label><select id="mode">
+            <option value="file">Upload Scans (PDF/Image)</option>
+            <option value="text">Paste Text</option>
+          </select></div>
+        <div class="col"><label>OCR Language</label><select id="ocrLang">
+            <option value="eng" selected>English (eng)</option>
+            <option value="hin">Hindi (hin)</option>
+            <option value="eng+hin">English + Hindi</option>
+          </select></div>
+      </div>
+      <div id="fileBox" class="col" style="margin-top:10px">
+        <div class="dropzone" id="dropzone">
+          <div class="muted">Drag & drop PDF or images here, or</div>
+          <div style="margin-top:8px"><input id="fileInput" type="file" class="input" multiple
+              accept=".pdf,.png,.jpg,.jpeg,.tif,.tiff,.bmp" /></div>
+        </div>
+      </div>
+      <div id="textBox" class="col" style="margin-top:10px; display:none">
+        <label>Paste FRA Document Text</label>
+        <textarea id="textInput" placeholder="Paste doc text here..."></textarea>
+      </div>
+      <div style="margin-top:14px"></div>
+      <h3>Backend (spaCy + geopy)</h3>
+      <div class="grid">
+        <div class="col"><label>spaCy NER Endpoint</label><input id="nerUrl" class="input"
+            value="http://localhost:8000/ner" />
+          <div class="muted">POST JSON { text } → { entities: [...] }</div>
+        </div>
+        <div class="col"><label>Geocode Endpoint</label><input id="geocodeUrl" class="input"
+            value="http://localhost:8000/geocode" />
+          <div class="muted">POST JSON { query } → { lat, lon, ... }</div>
+        </div>
+        <div class="row"><label class="row" style="gap:6px"><input id="fallbackGeocode" type="checkbox" checked /><span
+              class="muted">Use browser fallback geocoder if backend fails</span></label></div>
+      </div>
+      <div style="margin-top:20px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h3>Area Mapper</h3>
+        <form id="area-form" class="grid" style="gap: 12px;">
+          <div class="form-group col"><label for="area-name">Name of the Area</label><input type="text" id="area-name"
+              class="input" placeholder="e.g., North Field" required /></div>
+          <fieldset class="grid cols-2">
+            <legend>Point 1</legend><input type="number" step="any" class="lat input" placeholder="Latitude"
+              required /><input type="number" step="any" class="lng input" placeholder="Longitude" required />
+          </fieldset>
+          <fieldset class="grid cols-2">
+            <legend>Point 2</legend><input type="number" step="any" class="lat input" placeholder="Latitude"
+              required /><input type="number" step="any" class="lng input" placeholder="Longitude" required />
+          </fieldset>
+          <fieldset class="grid cols-2">
+            <legend>Point 3</legend><input type="number" step="any" class="lat input" placeholder="Latitude"
+              required /><input type="number" step="any" class="lng input" placeholder="Longitude" required />
+          </fieldset>
+          <fieldset class="grid cols-2">
+            <legend>Point 4</legend><input type="number" step="any" class="lat input" placeholder="Latitude" /><input
+              type="number" step="any" class="lng input" placeholder="Longitude" />
+          </fieldset>
+          <button type="submit" class="btn success">Mark and Save Area</button>
+        </form>
+      </div>
+      <details class="instructions" style="margin-top:14px">
+        <summary>Show minimal Python backend (FastAPI + spaCy + geopy)</summary>
+        <div class="muted" style="margin-top:8px">
+          <pre style="white-space:pre-wrap"><code>... Python code ...</code></pre>
+        </div>
+      </details>
+      <div style="margin-top:14px">
+        <div class="stepper" id="stepper">
+          <div class="step" data-step="upload"><span class="dot"></span>Upload</div>
+          <div class="step" data-step="ocr"><span class="dot"></span>OCR</div>
+          <div class="step" data-step="ner"><span class="dot"></span>NER</div>
+          <div class="step" data-step="geo"><span class="dot"></span>Geocode</div>
+          <div class="step" data-step="review"><span class="dot"></span>Review</div>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="logs" id="logs"></div>
+      </div>
+    </section>
+
+    <section class="grid" style="gap:16px">
+      <div class="card">
+        <div class="row" style="justify-content: space-between; align-items: start">
+          <div>
+            <h2>Results</h2>
+            <div class="muted">NER fields: Village, Patta Holder(s), Coordinates, Claim Status</div>
+          </div>
+          <div class="row"><button id="btnExportCSV" class="btn secondary">Export CSV</button><button id="btnExportJSON"
+              class="btn secondary">Export JSON</button><button id="btnClear" class="btn warn">Clear</button></div>
+        </div>
+        <div style="margin-top:10px; overflow:auto; max-height: 320px">
+          <div class="table-wrapper">
+            <div class="table-inner">
+              <table class="table" id="resultsTable">
+                <thead>
+                  <tr>
+                    <th style="width:48px">#</th>
+                    <th>Document</th>
+                    <th>Village</th>
+                    <th>Patta Holder(s)</th>
+                    <th>Coordinates</th>
+                    <th>Claim Status</th>
+                    <th>Excerpt</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 10px; height: 100%;">
+        <h2 style="padding: 0 4px 4px 4px">Map</h2>
+        <div id="map"></div>
+      </div>
+    </section>
+  </main>
+  <footer>Note: OCR in-browser uses Tesseract.js; NER and geocoding should be served from your Python API for best
+    accuracy. Data privacy depends on your hosting setup.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+  <script>
+    (() => {
+      // State and DOM elements
+      const state = { docs: [], markers: [], map: null, markerLayer: null, polygonLayer: null, processing: false, nextId: 1, };
+      const els = { mode: document.getElementById('mode'), fileBox: document.getElementById('fileBox'), textBox: document.getElementById('textBox'), fileInput: document.getElementById('fileInput'), drop: document.getElementById('dropzone'), textInput: document.getElementById('textInput'), ocrLang: document.getElementById('ocrLang'), nerUrl: document.getElementById('nerUrl'), geocodeUrl: document.getElementById('geocodeUrl'), fallbackGeocode: document.getElementById('fallbackGeocode'), logs: document.getElementById('logs'), stepper: document.getElementById('stepper'), btnProcess: document.getElementById('btnProcess'), btnSample: document.getElementById('btnSample'), btnExportCSV: document.getElementById('btnExportCSV'), btnExportJSON: document.getElementById('btnExportJSON'), btnClear: document.getElementById('btnClear'), resultsBody: document.getElementById('resultsBody'), areaForm: document.getElementById('area-form'), areaName: document.getElementById('area-name'), };
+      const polygonsDataKey = "userPolygons";
+
+      // Map init
+      function initMap() {
+        state.map = L.map('map');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(state.map);
+        state.markerLayer = L.layerGroup().addTo(state.map);
+        state.polygonLayer = L.layerGroup().addTo(state.map);
+        state.map.setView([20.5937, 78.9629], 5);
+
+        // ensure map redraws after layout change (responsive)
+        setTimeout(() => { try { state.map.invalidateSize(); } catch (e) { } }, 300);
+      }
+
+      // Recalculate map size on window resize to keep responsive behaviour
+      window.addEventListener('resize', () => {
+        if (state.map) {
+          try { state.map.invalidateSize(); } catch (e) { }
+        }
+      });
+
+      // UI helpers
+      function log(msg, type = 'info') { const p = document.createElement('div'); p.className = `log ${type}`; p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; els.logs.appendChild(p); els.logs.scrollTop = els.logs.scrollHeight; console[type === 'err' ? 'error' : 'log'](msg); }
+      function stepSet(name, status) { const el = els.stepper.querySelector(`[data-step="${name}"]`); if (el) { el.className = 'step'; if (status) el.classList.add(status); } }
+      function stepReset() { els.stepper.querySelectorAll('.step').forEach(s => s.className = 'step'); }
+
+      // Mode toggle and Drag & Drop
+      els.mode.addEventListener('change', () => { els.fileBox.style.display = els.mode.value === 'file' ? '' : 'none'; els.textBox.style.display = els.mode.value === 'text' ? '' : 'none'; });
+      ['dragenter', 'dragover'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); els.drop.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--info').trim(); }));
+      ['dragleave', 'drop'].forEach(ev => els.drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); els.drop.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--chip').trim(); }));
+      els.drop.addEventListener('drop', e => { if (e.dataTransfer.files.length) { els.fileInput.files = e.dataTransfer.files; log(`Added ${e.dataTransfer.files.length} file(s)`); } });
+
+      // Sample Text Button
+      const sampleText = `Forest Rights Act Claim Form\nVillage: Karatampatti, Panchayat: Kurumbapalayam\nPatta Holder(s): Smt. Lakshmi Devi, Shri R. Manikandan\nClaim Status: Approved\nCoordinates: 11.49231, 77.24890`;
+      els.btnSample.addEventListener('click', () => { els.mode.value = 'text'; els.fileBox.style.display = 'none'; els.textBox.style.display = ''; els.textInput.value = sampleText; log('Loaded sample text. You can click Start Processing.', 'info'); });
+
+      // Helper Functions
+      const toTitle = s => s.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+      const normalizeClaimStatus = s => { if (!s) return ''; const t = s.trim().toLowerCase(); if (/approve/.test(t)) return 'Approved'; if (/reject|denied/.test(t)) return 'Rejected'; if (/pending|under review/.test(t)) return 'Pending'; return toTitle(s); };
+      const cleanText = t => t.replace(/\r/g, '\n').replace(/\s+\n/g, '\n').trim();
+      const extractCoordsRegex = text => { const coords = []; const re = /([-+]?\d{1,2}\.\d{3,}),\s*([-+]?\d{1,3}\.\d{3,})/g; let m; while ((m = re.exec(text))) { coords.push({ lat: parseFloat(m[1]), lon: parseFloat(m[2]), source: 'text' }); } return coords; };
+      const uniq = arr => Array.from(new Set(arr.filter(Boolean)));
+
+      // RULE-BASED EXTRACTION FUNCTION (FALLBACK)
+      function ruleExtract(text) {
+        let village = '', holders = [], status = '';
+        const lines = text.split('\n');
+        lines.forEach(line => {
+          let match;
+          if (!village && (match = line.match(/Village:\s*(.*)/i))) village = match[1].split(',')[0].trim();
+          if (holders.length === 0 && (match = line.match(/Patta HolderKATEX_INLINE_OPENsKATEX_INLINE_CLOSE:\s*(.*)/i))) holders = match[1].split(/, | and /i).map(s => s.trim().replace(/^(Smt\.?|Shri)\s*/i, ''));
+          if (!status && (match = line.match(/Claim Status:\s*(.*)/i))) status = match[1].trim();
+        });
+        return {
+          village: toTitle(village),
+          holders: holders.map(toTitle),
+          status: normalizeClaimStatus(status),
+          coords: extractCoordsRegex(text)
+        };
+      }
+
+      // OCR & Backend Calls
+      async function ocrImage(blob, lang) { const worker = await Tesseract.createWorker(lang, 1, { logger: m => m?.status.includes('%') && log(`OCR: ${m.status}`) }); const ret = await worker.recognize(blob); await worker.terminate(); return ret.data.text || ''; }
+      async function pdfToImagesAndOCR(file, lang) { const url = URL.createObjectURL(file); const pdf = await pdfjsLib.getDocument({ url }).promise; const texts = []; for (let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const viewport = page.getViewport({ scale: 2 }); const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height; await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise; const blob = await new Promise(res => canvas.toBlob(res, 'image/png')); log(`OCR on PDF page ${i}/${pdf.numPages}...`); texts.push(await ocrImage(blob, lang)); } URL.revokeObjectURL(url); return texts; }
+      async function callAPI(endpoint, body) { if (!endpoint) return null; try { const resp = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!resp.ok) throw new Error(`HTTP ${resp.status}`); return await resp.json(); } catch (e) { log(`${body.text ? 'NER' : 'Geocode'} backend error: ${e.message}`, 'warn'); return null; } }
+      async function fallbackGeocode(query) { if (!els.fallbackGeocode.checked) return null; try { const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`); const arr = await resp.json(); return arr?.length ? { lat: parseFloat(arr[0].lat), lon: parseFloat(arr[0].lon), source: 'osm' } : null; } catch (e) { log(`Fallback geocode error: ${e.message}`, 'warn'); return null; } }
+
+      // Data Extraction & Results Display
+      function pickFromNER(nerJson, text) { if (!nerJson?.entities) return null; const out = { village: '', holders: [], status: '', coords: [] }; for (const ent of nerJson.entities) { const val = (ent.text || '').trim(); if (!val) continue; const label = (ent.label || '').toUpperCase(); if (label === 'VILLAGE' && !out.village) out.village = toTitle(val); if (label === 'PATTA_HOLDER') out.holders.push(toTitle(val)); if (label === 'CLAIM_STATUS' && !out.status) out.status = normalizeClaimStatus(val); if (label === 'COORDINATES') out.coords.push(...extractCoordsRegex(val)); } if (out.coords.length === 0) out.coords = extractCoordsRegex(text); return out; }
+      function addResultRow(rec) { const tr = document.createElement('tr'); tr.style.cursor = 'pointer'; const pillClass = rec.fields.status === 'Approved' ? 'ok' : (rec.fields.status === 'Rejected' ? 'reject' : 'pending'); tr.innerHTML = `<td>${rec.id}</td><td>${rec.filename}${rec.page ? ` (p.${rec.page})` : ''}</td><td>${rec.fields.village || ''}</td><td>${(rec.fields.holders || []).join('; ')}</td><td>${rec.coords.map(c => `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`).join(' | ')}</td><td><span class="pill ${pillClass}">${rec.fields.status || ''}</span></td><td>${rec.excerpt.slice(0, 160)}...</td>`; tr.addEventListener('click', () => rec.coords.length && state.map?.setView([rec.coords[0].lat, rec.coords[0].lon], 13)); els.resultsBody.appendChild(tr); }
+      function refreshMarkers() { state.markerLayer.clearLayers(); state.markers = []; state.docs.forEach(rec => rec.coords.forEach(c => { const m = L.marker([c.lat, c.lon]).bindPopup(`<b>${rec.fields.village || 'Unknown'}</b><br/>${rec.filename}<br/><small>${rec.fields.status || ''}</small>`); m.addTo(state.markerLayer); state.markers.push(m); })); if (state.markers.length) state.map.fitBounds(L.featureGroup(state.markers).getBounds().pad(0.2)); try { state.map.invalidateSize(); } catch (e) { } }
+      function addAreaToMap(name, points) { const polygon = L.polygon(points, { color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(), weight: 2 }).addTo(state.polygonLayer); polygon.bindTooltip(name, { permanent: true, direction: "center", className: "area-label" }).openTooltip(); polygon.bindPopup(`<b>${name}</b>`); return polygon; }
+      function loadAreas() { const saved = sessionStorage.getItem(polygonsDataKey); if (saved) { const polys = JSON.parse(saved); polys.forEach(p => addAreaToMap(p.name, p.points)); if (polys.length) log(`${polys.length} area(s) loaded from session.`); } }
+      function exportData(format) { const isCSV = format === 'csv'; let data, blobType, filename; if (isCSV) { const rows = [['id', 'file', 'page', 'village', 'patta_holders', 'lat', 'lon', 'claim_status', 'excerpt']]; state.docs.forEach(rec => { const base = [rec.id, rec.filename, rec.page || '', rec.fields.village || '', (rec.fields.holders || []).join('; '), '', '', rec.fields.status || '', (rec.excerpt || '').replace(/\n/g, ' ')]; if (!rec.coords.length) { rows.push(base); } else { rec.coords.forEach(c => rows.push([...base.slice(0, 5), c.lat, c.lon, ...base.slice(7)])); } }); data = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n'); blobType = 'text/csv;charset=utf-8;'; filename = 'fra_digitization.csv'; } else { data = JSON.stringify(state.docs.map(rec => ({ ...rec, text: undefined })), null, 2); blobType = 'application/json'; filename = 'fra_digitization.json'; } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: blobType })); a.download = filename; a.click(); }
+      function clearAll() { state.docs = []; state.markers = []; els.resultsBody.innerHTML = ''; els.logs.innerHTML = ''; state.markerLayer.clearLayers(); state.polygonLayer.clearLayers(); sessionStorage.removeItem(polygonsDataKey); stepReset(); log("All data cleared."); }
+
+      // Core Processing Logic
+      async function process() {
+        if (state.processing) return;
+        state.processing = true; els.btnProcess.disabled = true;
+        stepReset(); stepSet('upload', 'running');
+        let items = [];
+        if (els.mode.value === 'file') { const files = Array.from(els.fileInput.files || []); if (!files.length) { log('No files selected.', 'warn'); return done(); } log(`Processing ${files.length} file(s)...`); stepSet('upload', 'done'); stepSet('ocr', 'running'); for (const file of files) { try { const texts = file.name.toLowerCase().endsWith('.pdf') ? await pdfToImagesAndOCR(file, els.ocrLang.value) : [await ocrImage(file, els.ocrLang.value)]; texts.forEach((t, i) => items.push({ filename: file.name, page: texts.length > 1 ? i + 1 : null, text: t })); } catch (e) { log(`OCR failed for ${file.name}: ${e.message}`, 'err'); } } stepSet('ocr', 'done'); } else { if (!els.textInput.value.trim()) { log('No text provided.', 'warn'); return done(); } stepSet('upload', 'done'); items.push({ filename: 'Pasted Text', page: null, text: els.textInput.value }); }
+
+        stepSet('ner', 'running');
+        for (const it of items) {
+          const cleaned = cleanText(it.text || '');
+          const ner = await callAPI(els.nerUrl.value.trim(), { text: cleaned });
+
+          let extracted = ner ? pickFromNER(ner, cleaned) : null;
+          if (!extracted) {
+            log('NER backend failed or returned no data. Using local rule-based fallback.', 'warn');
+            extracted = ruleExtract(cleaned);
+          }
+
+          stepSet('geo', 'running');
+          if ((!extracted.coords || !extracted.coords.length) && extracted.village) {
+            const gBackend = await callAPI(els.geocodeUrl.value.trim(), { query: extracted.village });
+            const g = gBackend?.lat ? { ...gBackend, source: 'backend' } : await fallbackGeocode(extracted.village);
+            if (g) extracted.coords = [g];
+          }
+          const rec = { id: state.nextId++, filename: it.filename, page: it.page, text: cleaned, fields: { village: extracted.village || '', status: extracted.status || '', holders: uniq(extracted.holders || []) }, coords: extracted.coords || [], excerpt: cleaned.slice(0, 240) };
+          state.docs.push(rec);
+          addResultRow(rec);
+        }
+        refreshMarkers();
+        stepSet('ner', 'done'); stepSet('geo', 'done'); stepSet('review', 'done');
+        done();
+      }
+      function done() { state.processing = false; els.btnProcess.disabled = false; log('Processing complete.', 'info'); }
+
+      // Event Listeners
+      els.btnProcess.addEventListener('click', process);
+      els.btnExportCSV.addEventListener('click', () => exportData('csv'));
+      els.btnExportJSON.addEventListener('click', () => exportData('json'));
+      els.btnClear.addEventListener('click', clearAll);
+      els.areaForm.addEventListener("submit", (event) => { event.preventDefault(); const areaName = els.areaName.value; const latInputs = els.areaForm.querySelectorAll(".lat"); const lngInputs = els.areaForm.querySelectorAll(".lng"); const points = []; for (let i = 0; i < latInputs.length; i++) { const latVal = latInputs[i].value; const lngVal = lngInputs[i].value; if (latVal && lngVal) { const lat = parseFloat(latVal); const lng = parseFloat(lngVal); if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) { log(`Invalid coordinates at Point ${i + 1}.`, 'warn'); return; } points.push([lat, lng]); } } if (points.length < 3) { log("Please enter at least 3 valid coordinate pairs.", 'warn'); return; } if (!areaName) { log("Please enter a name for the area.", 'warn'); return; } const newPolygon = addAreaToMap(areaName, points); const existingPolygons = JSON.parse(sessionStorage.getItem(polygonsDataKey)) || []; existingPolygons.push({ name: areaName, points: points }); sessionStorage.setItem(polygonsDataKey, JSON.stringify(existingPolygons)); log(`Area "${areaName}" saved to session.`, 'info'); state.map.fitBounds(newPolygon.getBounds()); els.areaForm.reset(); });
+
+      // Init
+      initMap();
+      loadAreas();
+    })();
+  </script>
+</body>
+
+</html>
